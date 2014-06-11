@@ -51,12 +51,18 @@ namespace KTXToolkit {
                 pictureBox.Image = null;
                 return;
             }
-            layer = newLayer;
+            if ( newLayer < genericTexture.arrays ) {
+                layer = newLayer;
+            } else {
+                layer = genericTexture.arrays - 1;
+            }
             Bitmap drawImage = new Bitmap( (int)genericTexture.width, (int)genericTexture.height );
+            long layerSize = genericTexture.width * genericTexture.height * genericTexture.channels;
+            long layerOffset = layerSize * layer;
             int[] rgba = new int[4] { 0, 0, 0, 255 };
             for ( int x = 0; x < drawImage.Width; ++x ) {
                 for (int y = 0; y < drawImage.Height; ++y ) {
-                    long offset = ( x + y * genericTexture.width ) * genericTexture.channels;
+                    long offset = layerOffset + ( x + y * genericTexture.width ) * genericTexture.channels;
                     for ( int c = 0; c < genericTexture.channels; ++c ) {
                         rgba[c] = (int)( genericTexture.mipmapLevels[0].pixels[offset + c] * 255 );
                     }
