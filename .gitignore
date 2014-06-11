@@ -1,0 +1,10 @@
+*.cache
+*.chk
+*.dll
+*.exe
+
+*.ide
+*.pdb
+/CoreFormats/obj/Debug/*.txt
+
+*.txt

@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.21730.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KTXToolkit", "KTXToolkit\KTXToolkit.csproj", "{BEF1FB5F-68B6-4DBF-B081-0C27B47193FF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F27A5633-C42C-45D1-960B-0294FFFAE0C5} = {F27A5633-C42C-45D1-960B-0294FFFAE0C5}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginContract", "PluginContract\PluginContract.csproj", "{E61337AE-3BD0-4A23-A3A4-7C0BD21F0E29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreFormats", "CoreFormats\CoreFormats.csproj", "{F27A5633-C42C-45D1-960B-0294FFFAE0C5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KTXContainer", "KTXContainer\KTXContainer.csproj", "{DA86EA99-5AFB-4CEC-95DD-4139A9253949}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BEF1FB5F-68B6-4DBF-B081-0C27B47193FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEF1FB5F-68B6-4DBF-B081-0C27B47193FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEF1FB5F-68B6-4DBF-B081-0C27B47193FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEF1FB5F-68B6-4DBF-B081-0C27B47193FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E61337AE-3BD0-4A23-A3A4-7C0BD21F0E29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E61337AE-3BD0-4A23-A3A4-7C0BD21F0E29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E61337AE-3BD0-4A23-A3A4-7C0BD21F0E29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E61337AE-3BD0-4A23-A3A4-7C0BD21F0E29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F27A5633-C42C-45D1-960B-0294FFFAE0C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F27A5633-C42C-45D1-960B-0294FFFAE0C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F27A5633-C42C-45D1-960B-0294FFFAE0C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F27A5633-C42C-45D1-960B-0294FFFAE0C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA86EA99-5AFB-4CEC-95DD-4139A9253949}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA86EA99-5AFB-4CEC-95DD-4139A9253949}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA86EA99-5AFB-4CEC-95DD-4139A9253949}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA86EA99-5AFB-4CEC-95DD-4139A9253949}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
