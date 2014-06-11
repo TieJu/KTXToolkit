@@ -25,16 +25,15 @@ namespace KTXToolkit
 
         private void Run()
         {
-            load_plugins();
+            LoadPlugins();
             Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            Application.SetCompatibleTextRenderingDefault(true);
             Application.Run(new Form1(plugins));
         }
 
-        private void load_plugins()
+        private void LoadPlugins()
         {
-            var catalog = new DirectoryCatalog(".");
-            var container = new CompositionContainer(catalog);
+            CompositionContainer container = new CompositionContainer( new DirectoryCatalog( "." ) );
             container.ComposeParts(this);
         }
     }
