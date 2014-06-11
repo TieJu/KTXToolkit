@@ -65,12 +65,9 @@ namespace KTXToolkit {
                     long offset = layerOffset + ( x + y * genericTexture.width ) * genericTexture.channels;
                     for ( int c = 0; c < genericTexture.channels; ++c ) {
                         rgba[c] = (int)( genericTexture.mipmapLevels[0].pixels[offset + c] * 255 );
+                        rgba[c] = rgba[c] > 255 ? 255 : rgba[c] < 0 ? 0 : rgba[c];
                     }
-                    int r = rgba[0] > 255 ? 255 : rgba[0] < 0 ? 0 : rgba[0];
-                    int g = rgba[1] > 255 ? 255 : rgba[1] < 0 ? 0 : rgba[1];
-                    int b = rgba[2] > 255 ? 255 : rgba[2] < 0 ? 0 : rgba[2];
-                    int a = rgba[3] > 255 ? 255 : rgba[3] < 0 ? 0 : rgba[3];
-                    drawImage.SetPixel( x, y, Color.FromArgb( a, r, g, b ) );
+                    drawImage.SetPixel( x, y, Color.FromArgb( rgba[3], rgba[0], rgba[1], rgba[2] ) );
                 }
             }
             pictureBox.Image = drawImage;
