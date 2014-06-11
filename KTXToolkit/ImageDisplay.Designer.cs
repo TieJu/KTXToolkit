@@ -53,6 +53,7 @@
             this.ClientSize = new System.Drawing.Size(153, 39);
             this.Controls.Add(this.imageFail);
             this.Controls.Add(this.pictureBox);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "ImageDisplay";
             this.Text = "ImageDisplay";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();

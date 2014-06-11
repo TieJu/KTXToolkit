@@ -99,5 +99,9 @@ namespace KTXToolkit
                 }
             }
         }
+
+        private void aboutKTXToolkitToolStripMenuItem_Click( object sender, EventArgs e ) {
+            new AboutBox().ShowDialog();
+        }
     }
 }

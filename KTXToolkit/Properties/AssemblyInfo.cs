@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("KTXToolkit")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("KTX Toolkit")]
+[assembly: AssemblyDescription("KTX Toolkit")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("KTXToolkit")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCompany("Tiemo Jung")]
+[assembly: AssemblyProduct("KTX Toolkit")]
+[assembly: AssemblyCopyright("Copyright © Tiemo Jung 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

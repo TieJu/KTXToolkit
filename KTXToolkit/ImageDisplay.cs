@@ -14,6 +14,7 @@ namespace KTXToolkit {
         private CoreTexture texture;
         private GenericImage genericTexture;
         private uint layer = 0;
+        private uint mipmap = 0;
 
         private void UpdateGenericImage() {
             genericTexture = null;
@@ -44,7 +45,7 @@ namespace KTXToolkit {
 
         }
 
-        private void DisplayImageLayer( uint newLayer ) {
+        private void DisplayImageLayer( uint newMipmap, uint newLayer ) {
             if ( null == genericTexture ) {
                 pictureBox.Hide();
                 imageFail.Show();
@@ -56,15 +57,22 @@ namespace KTXToolkit {
             } else {
                 layer = genericTexture.arrays - 1;
             }
-            Bitmap drawImage = new Bitmap( (int)genericTexture.width, (int)genericTexture.height );
-            long layerSize = genericTexture.width * genericTexture.height * genericTexture.channels;
+
+            if ( newMipmap < genericTexture.mipmapLevels.Length ) {
+                mipmap = newMipmap;
+            } else {
+                mipmap = (uint)genericTexture.mipmapLevels.Length;
+            }
+
+            Bitmap drawImage = new Bitmap( (int)genericTexture.width >> (int)mipmap, (int)genericTexture.height >> (int)mipmap );
+            long layerSize = (genericTexture.width * genericTexture.height * genericTexture.channels) >> (int)mipmap;
             long layerOffset = layerSize * layer;
             int[] rgba = new int[4] { 0, 0, 0, 255 };
             for ( int x = 0; x < drawImage.Width; ++x ) {
                 for (int y = 0; y < drawImage.Height; ++y ) {
                     long offset = layerOffset + ( x + y * genericTexture.width ) * genericTexture.channels;
                     for ( int c = 0; c < genericTexture.channels; ++c ) {
-                        rgba[c] = (int)( genericTexture.mipmapLevels[0].pixels[offset + c] * 255 );
+                        rgba[c] = (int)( genericTexture.mipmapLevels[mipmap].pixels[offset + c] * 255 );
                         rgba[c] = rgba[c] > 255 ? 255 : rgba[c] < 0 ? 0 : rgba[c];
                     }
                     drawImage.SetPixel( x, y, Color.FromArgb( rgba[3], rgba[0], rgba[1], rgba[2] ) );
@@ -77,7 +85,7 @@ namespace KTXToolkit {
 
         private void UpdateImageDisplay() {
             UpdateGenericImage();
-            DisplayImageLayer( layer );
+            DisplayImageLayer( mipmap, layer );
         }
 
         public ImageDisplay( IPlugin[] plugins, CoreTexture texture_) {
@@ -85,6 +93,7 @@ namespace KTXToolkit {
             PluginList = plugins;
             texture = texture_;
             AutoSize = true;
+            MaximizeBox = false;
             UpdateImageDisplay();
         }
     }
