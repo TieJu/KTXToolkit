@@ -710,8 +710,8 @@ GL_RGBA32UI	GL_RGBA	ui32	ui32	ui32	ui32	*/
                 List<ITextureFormat> fmts = new List<ITextureFormat>();
                 fmts.Add( new Format8UN( GL.GL_UNSIGNED_BYTE, GL.GL_RGBA, GL.GL_RGBA8, GL.GL_RGBA, 4, 4, "RGBA UNSIGNED BYTE" ) );
                 fmts.Add( new Format8UN( GL.GL_UNSIGNED_BYTE, GL.GL_RGB, GL.GL_RGB8, GL.GL_RGB, 3, 3, "RGB UNSIGNED BYTE" ) );
-                fmts.Add( new Format8UN( GL.GL_UNSIGNED_SHORT, GL.GL_RGBA, GL.GL_RGBA16, GL.GL_RGBA, 4, 8, "RGBA UNSIGNED SHORT" ) );
-                fmts.Add( new Format8UN( GL.GL_UNSIGNED_SHORT, GL.GL_RGB, GL.GL_RGB16, GL.GL_RGB, 3, 6, "RGB UNSIGNED SHORT" ) );
+                fmts.Add( new Format16UN( GL.GL_UNSIGNED_SHORT, GL.GL_RGBA, GL.GL_RGBA16, GL.GL_RGBA, 4, 8, "RGBA UNSIGNED SHORT" ) );
+                fmts.Add( new Format16UN( GL.GL_UNSIGNED_SHORT, GL.GL_RGB, GL.GL_RGB16, GL.GL_RGB, 3, 6, "RGB UNSIGNED SHORT" ) );
                 return fmts.ToArray();
             }
         }
