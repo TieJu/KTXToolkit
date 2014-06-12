@@ -14,8 +14,6 @@ namespace KTXToolkit
 {
     public partial class Form1 : Form
     {
-        private ImageDisplay imageDisplay;
-        private CoreTexture texture;
         private IPlugin[] PluginList;
         public Form1(IPlugin[] plugins)
         {
@@ -23,11 +21,8 @@ namespace KTXToolkit
             InitializeComponent();
         }
 
-        private void DisplayTexture(string name) {
-            if ( null != imageDisplay ) {
-                imageDisplay.Close();
-            }
-            imageDisplay = new ImageDisplay(PluginList, texture);
+        private void DisplayTexture(string name, CoreTexture texture) {
+            ImageDisplay imageDisplay = new ImageDisplay(PluginList, texture);
             imageDisplay.Width = (int)texture.pixelWidth;
             imageDisplay.Height = (int)texture.pixelHeight;
             imageDisplay.Text = name;
@@ -94,8 +89,7 @@ namespace KTXToolkit
                 string ext = Path.GetExtension( name );
                 ITextureContainer container = GetContainerFromExtension( ext );
                 if ( container != null ) {
-                    texture = container.Load( name );
-                    DisplayTexture(name);
+                    DisplayTexture(name, container.Load( name ) );
                 }
             }
         }
