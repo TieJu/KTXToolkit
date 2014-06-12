@@ -96,5 +96,9 @@ namespace KTXToolkit {
             MaximizeBox = false;
             UpdateImageDisplay();
         }
+
+        private void exitToolStripMenuItem_Click( object sender, EventArgs e ) {
+            Close();
+        }
     }
 }
