@@ -40,7 +40,7 @@ namespace KTXToolkit {
                         for ( uint h = 0; h < y; ++h ) {
                             for ( uint w = 0; w < x; ++w ) {
                                 for ( uint c = 0; c < image.channels; ++c ) {
-                                    image.SetPixelChannel( mipmap, l, d, h, w, c, ApplyFilter( w * dX, h * dY, d * dZ, mipmap, l, c, ref image ) );
+                                    image.SetPixelChannel( mipmap, l, d, h, w, c, ApplyFilter( w, h, d, mipmap, l, c, ref image ) );
                                 }
                             }
                         }
