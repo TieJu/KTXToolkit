@@ -8,3 +8,7 @@
 /CoreFormats/obj/Debug/*.txt
 
 *.txt
+/KTXToolkit/bin/Debug/*.manifest
+
+/KTXToolkit/obj/Debug/*.resources
+/MipmapGenerators/obj/Debug/*.cs
