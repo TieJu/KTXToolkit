@@ -130,10 +130,6 @@ namespace KTXToolkit {
             return resultTexture;
         }
 
-        CoreTexture readFromBinaryReaderBigEndian( BinaryReader reader ) {
-            return null;
-        }
-
         static byte[] readBytesInOrder(BinaryReader reader, UInt32 bytes ) {
             return reader.ReadBytes( (int)bytes );
         }
@@ -176,15 +172,57 @@ namespace KTXToolkit {
             return readFromBinaryReader( fileReader );
         }
 
-        void WriteHeaderToBinaryWriter(BinaryWriter writer, CoreTexture texture ) {
+        void WriteImages( BinaryWriter writer, CoreTexture texture ) {
+            foreach ( CoreTextureMipmapLevel mip in texture.mipmapLevels ) {
+                writer.Write( (UInt32)mip.pixels.Length );
+                writer.Write( mip.pixels );
+            }
+        }
+
+        byte[] WriteKeyValuePairsToBuffer( CoreTexture texture ) {/*
+            BinaryWriter writer = new BinaryWriter( new MemoryStream() );
+
+            foreach ( CoreTextureKeyValuePair pair in texture.keyValuePairs ) {
+                UInt32 len = (UInt32)pair.key.Length + (UInt32)pair.value.Length + 2;
+                writer.Write( len );
+
+            }
+            //writer.BaseStream.Position*/
+            return new byte[0];
+        }
+
+        void WriteKeyValuePairs( BinaryWriter writer, CoreTexture texture ) {
+            //if ( texture.keyValuePairs.Length == 0 ) {
+                writer.Write( (UInt32)0 );
+            //} else {
+            //    byte[] buffer = WriteKeyValuePairsToBuffer( texture );
+            //    writer.Write( (UInt32)buffer.Length );
+            //    writer.Write( buffer );
+            //}
+        }
+
+        void WriteHeader(BinaryWriter writer, CoreTexture texture ) {
             writer.Write( new byte[12] { 0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A } );
             for ( byte b = 1; b <= 4; ++b ) {
                 writer.Write( b );
             }
+            writer.Write( texture.glType );
+            writer.Write( texture.glTypeSize );
+            writer.Write( texture.glFormat );
+            writer.Write( texture.glInternalFormat );
+            writer.Write( texture.glBaseInternalFormat );
+            writer.Write( texture.pixelWidth );
+            writer.Write( texture.pixelHeight );
+            writer.Write( texture.pixelDepth );
+            writer.Write( texture.numberOfArrayElements );
+            writer.Write( texture.numberOfFaces );
+            writer.Write( (UInt32)texture.mipmapLevels.Length );
         }
 
         void WriteToBinaryWriter(BinaryWriter writer, CoreTexture texture ) {
-            WriteHeaderToBinaryWriter( writer, texture );
+            WriteHeader( writer, texture );
+            WriteKeyValuePairs( writer, texture );
+            WriteImages( writer, texture );
         }
 
         public void Store( string path, CoreTexture texture ) {
