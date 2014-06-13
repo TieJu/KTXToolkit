@@ -67,5 +67,6 @@ namespace KTXToolkit
     {
         ITextureFormat[] TextureFormats { get; }
         ITextureContainer[] TextureContainer { get; }
+        IMipmapGenerator[] MipmapGenerators { get; }
     }
 }

@@ -42,7 +42,66 @@ namespace KTXToolkit {
         }
 
         private void BuildMipmaps() {
+            List<IMipmapGenerator> mipmapGens = new List<IMipmapGenerator>();
 
+            foreach ( IPlugin plugin in PluginList ) {
+                if ( null == plugin.MipmapGenerators ) {
+                    continue;
+                }
+
+                mipmapGens.AddRange( plugin.MipmapGenerators );
+            }
+
+            if ( mipmapGens.Count < 1 ) {
+                MessageBox.Show(this, "No mipmap generators found", "Missing Mipmap Generators", MessageBoxButtons.OK,MessageBoxIcon.Error );
+                return;
+            }
+        }
+
+        private void UpdateMenuItems() {
+            if ( null != genericTexture ) {
+                if ( genericTexture.mipmapLevels.Length > 1 ) {
+                    if ( mipmapLevelToolStripMenuItem.DropDownItems.Count == genericTexture.mipmapLevels.Length ) {
+                        return;
+                    }
+                    mipmapLevelToolStripMenuItem.Enabled = true;
+                    for ( uint m = 0; m < genericTexture.mipmapLevels.Length; ++m ) {
+                        ToolStripItem item = new ToolStripMenuItem();
+                        item.AutoSize = true;
+                        item.Text = m.ToString();
+                        uint v = m;
+                        item.Click += ( x, y ) => DisplayImageLayer( v, layer );
+                        mipmapLevelToolStripMenuItem.DropDownItems.Add( item );
+                    }
+                } else {
+                    mipmapLevelToolStripMenuItem.Enabled = false;
+                    mipmapLevelToolStripMenuItem.DropDownItems.Clear();
+                }
+
+                if ( genericTexture.arrays > 1 ) {
+                    if ( layerToolStripMenuItem.DropDownItems.Count == genericTexture.arrays ) {
+                        return;
+                    }
+                    layerToolStripMenuItem.Enabled = true;
+                    for ( uint l = 0; l < genericTexture.arrays; ++l ) {
+                        ToolStripItem item = new ToolStripMenuItem();
+                        item.AutoSize = true;
+                        item.Text = l.ToString();
+                        uint v = l;
+                        item.Click += ( x, y ) => DisplayImageLayer( mipmap, v );
+                        mipmapLevelToolStripMenuItem.DropDownItems.Add( item );
+                    }
+                } else {
+                    layerToolStripMenuItem.Enabled = false;
+                    layerToolStripMenuItem.DropDownItems.Clear();
+                }
+            } else {
+                mipmapLevelToolStripMenuItem.Enabled = false;
+                mipmapLevelToolStripMenuItem.DropDownItems.Clear();
+
+                layerToolStripMenuItem.Enabled = false;
+                layerToolStripMenuItem.DropDownItems.Clear();
+            }
         }
 
         private void DisplayImageLayer( uint newMipmap, uint newLayer ) {
@@ -50,6 +109,7 @@ namespace KTXToolkit {
                 pictureBox.Hide();
                 imageFail.Show();
                 pictureBox.Image = null;
+                UpdateMenuItems();
                 return;
             }
             if ( newLayer < genericTexture.arrays ) {
@@ -64,16 +124,18 @@ namespace KTXToolkit {
                 mipmap = (uint)genericTexture.mipmapLevels.Length;
             }
 
-            Bitmap drawImage = new Bitmap( (int)genericTexture.width >> (int)mipmap, (int)genericTexture.height >> (int)mipmap );
-            long layerSize = (genericTexture.width * genericTexture.height * genericTexture.channels) >> (int)mipmap;
+            int mW = Math.Max((int)genericTexture.width >> (int)mipmap, 1);
+            int mH = Math.Max((int)genericTexture.height >> (int)mipmap, 1);
+            Bitmap drawImage = new Bitmap( mW, mH );
+            long layerSize = mW * mH * genericTexture.channels;
             long layerOffset = layerSize * layer;
             int[] rgba = new int[4] { 0, 0, 0, 255 };
             for ( int x = 0; x < drawImage.Width; ++x ) {
                 for (int y = 0; y < drawImage.Height; ++y ) {
-                    long offset = layerOffset + ( x + y * genericTexture.width ) * genericTexture.channels;
+                    long offset = layerOffset + ( x + y * mW ) * genericTexture.channels;
                     for ( int c = 0; c < genericTexture.channels; ++c ) {
                         rgba[c] = (int)( genericTexture.mipmapLevels[mipmap].pixels[offset + c] * 255 );
-                        rgba[c] = rgba[c] > 255 ? 255 : rgba[c] < 0 ? 0 : rgba[c];
+                        rgba[c] = Math.Max( 0, Math.Min( 255, rgba[c] ) );
                     }
                     drawImage.SetPixel( x, y, Color.FromArgb( rgba[3], rgba[0], rgba[1], rgba[2] ) );
                 }
@@ -81,6 +143,7 @@ namespace KTXToolkit {
             pictureBox.Image = drawImage;
             pictureBox.Show();
             imageFail.Hide();
+            UpdateMenuItems();
         }
 
         private void UpdateImageDisplay() {
@@ -93,12 +156,20 @@ namespace KTXToolkit {
             PluginList = plugins;
             texture = texture_;
             AutoSize = true;
-            MaximizeBox = false;
+            MinimumSize = new Size( 158, 98 );
             UpdateImageDisplay();
         }
 
         private void exitToolStripMenuItem_Click( object sender, EventArgs e ) {
             Close();
+        }
+
+        private void generateMipmapLevelsToolStripMenuItem_Click( object sender, EventArgs e ) {
+            BuildMipmaps();
+        }
+
+        private void replaceImageToolStripMenuItem_Click( object sender, EventArgs e ) {
+
         }
     }
 }

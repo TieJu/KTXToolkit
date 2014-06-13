@@ -208,5 +208,10 @@ namespace KTXToolkit {
                 return new ITextureContainer[1] { new KTXContainer() };
             }
         }
+        public IMipmapGenerator[] MipmapGenerators {
+            get {
+                return null;
+            }
+        }
     }
 }

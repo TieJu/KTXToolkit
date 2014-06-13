@@ -720,5 +720,10 @@ GL_RGBA32UI	GL_RGBA	ui32	ui32	ui32	ui32	*/
                 return null;
             }
         }
+        public IMipmapGenerator[] MipmapGenerators {
+            get {
+                return null;
+            }
+        }
     }
 }
