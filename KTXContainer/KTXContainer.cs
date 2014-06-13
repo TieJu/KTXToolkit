@@ -62,44 +62,46 @@ namespace KTXToolkit {
         CoreTextureKeyValuePair readKeyValuePairFromBinaryReader( Func<UInt32> uintReader, Func<UInt32, byte[]> byteReader, out UInt32 bytesRead ) {
             UTF8Encoding transform = new UTF8Encoding(false, false);
             bytesRead = uintReader();
+            uint padding = 3 - ( ( bytesRead + 3 ) % 4 );
+            byte[] dataSet = byteReader( bytesRead );
+            byteReader( padding );
+            bytesRead += padding + 4;
+
             CoreTextureKeyValuePair pair = new CoreTextureKeyValuePair();
-            UInt32 bi = 0;
-            List<byte> byteBuffer = new List<byte>();
-            for ( ; bi < bytesRead; ++bi ) {
-                byte bv = byteReader(1)[0];
-                if ( bv == 0 ) {
+
+            int count = 1;
+            for ( ; count < dataSet.Length; ++count ) {
+                if ( dataSet[count] == 0 ) {
                     break;
                 }
-                byteBuffer.Add( bv );
             }
-            pair.key = transform.GetString( byteBuffer.ToArray() );
 
-            byteBuffer.Clear();
-            for ( ; bi < bytesRead; ++bi ) {
-                byte bv = byteReader( 1 )[0];
-                if ( bv == 0 ) {
+            int end = dataSet.Length - 1;
+            for ( ; end > 0; --end ) {
+                if ( dataSet[end] != 0 ) {
                     break;
                 }
-                byteBuffer.Add( bv );
             }
-            pair.value = transform.GetString( byteBuffer.ToArray() );
 
-            bytesRead += 3 - ( ( bytesRead + 3 ) % 4 );
-            for ( ;bi < bytesRead; ++bi ) {
-                byte b = byteReader( 1 )[0];
-            }
+            pair.key = transform.GetString( dataSet, 0, count );
+            pair.value = transform.GetString( dataSet, count + 1, end - count );
+
             return pair;
         }
 
         void readKeyValuePairsFromBinaryReader( Func<UInt32> uintReader, Func<UInt32, byte[]> byteReader, UInt32 bytesOfKeyValueData, ref CoreTexture resultTexture ) {
             List<CoreTextureKeyValuePair> keyValuePairs = new List<CoreTextureKeyValuePair>();
-            /*
-            while ( bytesOfKeyValueData > 0 ) {
+
+            while ( bytesOfKeyValueData > 4 ) {
                 UInt32 bytesRead;
                 keyValuePairs.Add( readKeyValuePairFromBinaryReader( uintReader, byteReader, out bytesRead ) );
                 bytesOfKeyValueData -= bytesRead;
-            }*/
-            byteReader( bytesOfKeyValueData );
+            }
+
+            if ( bytesOfKeyValueData > 0 ) {
+                // skip over rest
+                byteReader( bytesOfKeyValueData );
+            }
 
             resultTexture.keyValuePairs = keyValuePairs.ToArray();
         }

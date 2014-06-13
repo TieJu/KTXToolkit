@@ -25,12 +25,18 @@ namespace KTXToolkit {
                 }
 
                 foreach ( ITextureFormat fmt in fmtList ) {
-                    if ( fmt.glType != texture.glType ) {
-                        continue;
-                    }
+                    if ( texture.glType == 0 && texture.glFormat == 0 ) {
+                        if ( fmt.glInternalFormat != texture.glInternalFormat ) {
+                            continue;
+                        }
+                    } else {
+                        if ( fmt.glType != texture.glType ) {
+                            continue;
+                        }
 
-                    if ( fmt.glFormat != texture.glFormat ) {
-                        continue;
+                        if ( fmt.glFormat != texture.glFormat ) {
+                            continue;
+                        }
                     }
 
                     genericTexture = fmt.ToGenericImage( texture );
@@ -39,6 +45,14 @@ namespace KTXToolkit {
                     }
                 }
             }
+
+            MessageBox.Show( this, "Unsupported format ( 0x" 
+                                   + texture.glType.ToString("X4") 
+                                   + ", 0x" 
+                                   + texture.glFormat.ToString("X4")
+                                   + ", 0x"
+                                   + texture.glInternalFormat.ToString("X4")
+                                   + ")", "Unsupported Format", MessageBoxButtons.OK, MessageBoxIcon.Error );
         }
 
         private void BuildMipmaps() {
