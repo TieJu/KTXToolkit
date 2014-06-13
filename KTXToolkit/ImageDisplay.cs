@@ -56,6 +56,13 @@ namespace KTXToolkit {
                 MessageBox.Show(this, "No mipmap generators found", "Missing Mipmap Generators", MessageBoxButtons.OK,MessageBoxIcon.Error );
                 return;
             }
+
+            MipmapGen dlg = new MipmapGen( mipmapGens.ToArray() );
+            dlg.ShowDialog(this);
+            if ( null != dlg.Selected ) {
+                dlg.Selected.BuildMipmaps( ref genericTexture );
+                DisplayImageLayer( mipmap, layer );
+            }
         }
 
         private void UpdateMenuItems() {
@@ -64,6 +71,7 @@ namespace KTXToolkit {
                     if ( mipmapLevelToolStripMenuItem.DropDownItems.Count == genericTexture.mipmapLevels.Length ) {
                         return;
                     }
+
                     mipmapLevelToolStripMenuItem.Enabled = true;
                     for ( uint m = 0; m < genericTexture.mipmapLevels.Length; ++m ) {
                         ToolStripItem item = new ToolStripMenuItem();
@@ -82,6 +90,7 @@ namespace KTXToolkit {
                     if ( layerToolStripMenuItem.DropDownItems.Count == genericTexture.arrays ) {
                         return;
                     }
+
                     layerToolStripMenuItem.Enabled = true;
                     for ( uint l = 0; l < genericTexture.arrays; ++l ) {
                         ToolStripItem item = new ToolStripMenuItem();

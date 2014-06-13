@@ -48,6 +48,32 @@ namespace KTXToolkit
         public uint faces;
         public uint channels;
         public GenericImageMipmapLevel[] mipmapLevels;
+
+        public double GetPixelChannel(uint mipmap_, uint array_, uint depth_, uint height_, uint width_, uint channel_ ) {
+            uint w = (uint)Math.Max( 1, (int)width >> (int)mipmap_ );
+            uint h = (uint)Math.Max( 1, (int)height >> (int)mipmap_ );
+            uint d = (uint)Math.Max( 1, (int)depth >> (int)mipmap_ );
+            if ( depth_ >= d || height_ >= h || width_ >= w || channel_ >= channels ) {
+                return 0;
+            }
+
+            uint image = w * h * d * channels;
+            uint offset = ( w * h * depth_ + w * height_ + width_ ) * channels + channel_;
+            return mipmapLevels[mipmap_].pixels[array_ * image + offset];
+        }
+
+        public void SetPixelChannel( uint mipmap_, uint array_, uint depth_, uint height_, uint width_, uint channel_, double value_ ) {
+            uint w = (uint)Math.Max( 1, (int)width >> (int)mipmap_ );
+            uint h = (uint)Math.Max( 1, (int)height >> (int)mipmap_ );
+            uint d = (uint)Math.Max( 1, (int)depth >> (int)mipmap_ );
+            if ( depth_ >= d || height_ >= h || width_ >= w || channel_ >= channels ) {
+                return;
+            }
+
+            uint image = w * h * d * channels;
+            uint offset = ( w * h * depth_ + w * height_ + width_ ) * channels + channel_;
+            mipmapLevels[mipmap_].pixels[array_ * image + offset] = value_;
+        }
     }
 
     public interface ITextureFormat {
