@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace KTXToolkit {
     public partial class ImageDisplay : Form {
@@ -193,6 +194,101 @@ namespace KTXToolkit {
 
         private void replaceImageToolStripMenuItem_Click( object sender, EventArgs e ) {
 
+        }
+
+        // FIXME: copy paste from Form1
+        private string BuildFileContainerFilter() {
+            string filter = "";
+            foreach ( IPlugin plugin in PluginList ) {
+                ITextureContainer[] containers = plugin.TextureContainer;
+                if ( null == containers ) {
+                    continue;
+                }
+                foreach ( ITextureContainer container in containers ) {
+                    string mask = "";
+                    filter += container.ToString();
+                    filter += "(";
+                    foreach ( string ext in container.extensions ) {
+                        filter += "*" + ext + ", ";
+                        mask += "*" + ext + ";";
+                    }
+                    filter = filter.TrimEnd( ',', ' ' ) + ")|";
+                    filter += mask.TrimEnd( ';' );
+                }
+            }
+            return filter;
+        }
+
+        // FIXME: copy paste from Form1
+        private ITextureContainer GetContainerFromExtension( string extension ) {
+            foreach ( IPlugin plugin in PluginList ) {
+                ITextureContainer[] containers = plugin.TextureContainer;
+                if ( null == containers ) {
+                    continue;
+                }
+                foreach ( ITextureContainer container in containers ) {
+                    foreach ( string ext in container.extensions ) {
+                        if ( ext == extension ) {
+                            return container;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        private void TransformTextureBack() {
+            foreach ( IPlugin plugin in PluginList ) {
+                ITextureFormat[] fmtList = plugin.TextureFormats;
+                if ( null == fmtList ) {
+                    continue;
+                }
+
+                foreach ( ITextureFormat fmt in fmtList ) {
+                    if ( texture.glType == 0 && texture.glFormat == 0 ) {
+                        if ( fmt.glInternalFormat != texture.glInternalFormat ) {
+                            continue;
+                        }
+                    } else {
+                        if ( fmt.glType != texture.glType ) {
+                            continue;
+                        }
+
+                        if ( fmt.glFormat != texture.glFormat ) {
+                            continue;
+                        }
+                    }
+
+                    CoreTexture tex  = fmt.ToCoreTexture( genericTexture );
+                    if ( null != tex ) {
+                        texture = tex;
+                        return;
+                    }
+                }
+            }
+        }
+
+        private void SaveTo(string path ) {
+            string ext = Path.GetExtension( path );
+            ITextureContainer container = GetContainerFromExtension( ext );
+            if ( container != null ) {
+                TransformTextureBack();
+                container.Store( path, texture );
+            }
+        }
+
+        private void saveToolStripMenuItem_Click( object sender, EventArgs e ) {
+            SaveTo( Text );
+        }
+
+        private void saveAsToolStripMenuItem_Click( object sender, EventArgs e ) {
+            SaveFileDialog sfdlg = new SaveFileDialog();
+
+            sfdlg.Filter = BuildFileContainerFilter();
+
+            if ( sfdlg.ShowDialog() == DialogResult.OK ) {
+                SaveTo( sfdlg.FileName );
+            }
         }
     }
 }

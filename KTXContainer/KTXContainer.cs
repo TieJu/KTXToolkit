@@ -169,36 +169,51 @@ namespace KTXToolkit {
             }
 
             BinaryReader fileReader = new BinaryReader( file );
-            return readFromBinaryReader( fileReader );
+            CoreTexture tex = readFromBinaryReader( fileReader );
+            file.Dispose();
+            return tex;
         }
 
         void WriteImages( BinaryWriter writer, CoreTexture texture ) {
             foreach ( CoreTextureMipmapLevel mip in texture.mipmapLevels ) {
                 writer.Write( (UInt32)mip.pixels.Length );
                 writer.Write( mip.pixels );
+                int padding = 3 - ( ( mip.pixels.Length + 3 ) % 4 );
+                for ( int i = 0; i < padding; ++i ) {
+                    writer.Write( (byte)0 );
+                }
             }
         }
 
-        byte[] WriteKeyValuePairsToBuffer( CoreTexture texture ) {/*
+        byte[] WriteKeyValuePairsToBuffer( CoreTexture texture ) {
+            UTF8Encoding transform = new UTF8Encoding( false, false );
             BinaryWriter writer = new BinaryWriter( new MemoryStream() );
 
             foreach ( CoreTextureKeyValuePair pair in texture.keyValuePairs ) {
-                UInt32 len = (UInt32)pair.key.Length + (UInt32)pair.value.Length + 2;
+                byte[] keyInBytes = transform.GetBytes( pair.key );
+                byte[] valueInBytes = transform.GetBytes( pair.value );
+                UInt32 len = (UInt32)( keyInBytes.Length + 1 + valueInBytes.Length + 1 );
                 writer.Write( len );
-
+                writer.Write( keyInBytes );
+                writer.Write( (byte)0 );
+                writer.Write( valueInBytes );
+                writer.Write( (byte)0 );
+                uint padding = 3 - ( ( len + 3 ) % 4 );
+                for ( uint p = 0; p < padding; ++p ) {
+                    writer.Write( (byte)0 );
+                }
             }
-            //writer.BaseStream.Position*/
-            return new byte[0];
+            return ( (MemoryStream)writer.BaseStream ).ToArray();
         }
 
         void WriteKeyValuePairs( BinaryWriter writer, CoreTexture texture ) {
-            //if ( texture.keyValuePairs.Length == 0 ) {
+            if ( texture.keyValuePairs.Length == 0 ) {
                 writer.Write( (UInt32)0 );
-            //} else {
-            //    byte[] buffer = WriteKeyValuePairsToBuffer( texture );
-            //    writer.Write( (UInt32)buffer.Length );
-            //    writer.Write( buffer );
-            //}
+            } else {
+                byte[] buffer = WriteKeyValuePairsToBuffer( texture );
+                writer.Write( (UInt32)buffer.Length );
+                writer.Write( buffer );
+            }
         }
 
         void WriteHeader(BinaryWriter writer, CoreTexture texture ) {
@@ -233,6 +248,8 @@ namespace KTXToolkit {
 
             BinaryWriter fileWriter = new BinaryWriter( file );
             WriteToBinaryWriter( fileWriter, texture );
+            file.Flush();
+            file.Dispose();
         }
     }
 

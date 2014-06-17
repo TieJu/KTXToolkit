@@ -28,12 +28,14 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mipmapLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.layerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generateMipmapLevelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.replaceImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mipmapLevelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.layerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -71,6 +73,8 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveToolStripMenuItem,
+            this.saveAsToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -82,29 +86,6 @@
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
-            // viewToolStripMenuItem
-            // 
-            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mipmapLevelToolStripMenuItem,
-            this.layerToolStripMenuItem});
-            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.viewToolStripMenuItem.Text = "View";
-            // 
-            // mipmapLevelToolStripMenuItem
-            // 
-            this.mipmapLevelToolStripMenuItem.Enabled = false;
-            this.mipmapLevelToolStripMenuItem.Name = "mipmapLevelToolStripMenuItem";
-            this.mipmapLevelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.mipmapLevelToolStripMenuItem.Text = "Mipmap Level";
-            // 
-            // layerToolStripMenuItem
-            // 
-            this.layerToolStripMenuItem.Enabled = false;
-            this.layerToolStripMenuItem.Name = "layerToolStripMenuItem";
-            this.layerToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.layerToolStripMenuItem.Text = "Layer";
             // 
             // editToolStripMenuItem
             // 
@@ -129,6 +110,43 @@
             this.replaceImageToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.replaceImageToolStripMenuItem.Text = "Replace Image";
             this.replaceImageToolStripMenuItem.Click += new System.EventHandler(this.replaceImageToolStripMenuItem_Click);
+            // 
+            // viewToolStripMenuItem
+            // 
+            this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mipmapLevelToolStripMenuItem,
+            this.layerToolStripMenuItem});
+            this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.viewToolStripMenuItem.Text = "View";
+            // 
+            // mipmapLevelToolStripMenuItem
+            // 
+            this.mipmapLevelToolStripMenuItem.Enabled = false;
+            this.mipmapLevelToolStripMenuItem.Name = "mipmapLevelToolStripMenuItem";
+            this.mipmapLevelToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.mipmapLevelToolStripMenuItem.Text = "Mipmap Level";
+            // 
+            // layerToolStripMenuItem
+            // 
+            this.layerToolStripMenuItem.Enabled = false;
+            this.layerToolStripMenuItem.Name = "layerToolStripMenuItem";
+            this.layerToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.layerToolStripMenuItem.Text = "Layer";
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem.Text = "Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // saveAsToolStripMenuItem
+            // 
+            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveAsToolStripMenuItem.Text = "Save As...";
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // ImageDisplay
             // 
@@ -163,5 +181,7 @@
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mipmapLevelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem layerToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
     }
 }

@@ -544,6 +544,7 @@ GL_RGBA32UI	GL_RGBA	ui32	ui32	ui32	ui32	*/
         public uint align;
 
         protected abstract double ToGenericImagePixelAtIndex( byte[] bytes, UInt32 pixel, uint channel );
+        protected abstract byte[] ToCoreImagePixelAtIndex( double[] value, UInt32 pixel, uint channel );
 
         private void ToGenericImagePixel( CoreTexture texture, ref GenericImage image, UInt32 level, UInt32 pixel ) {
             for ( uint channel = 0; channel < channelCount; ++channel ) {
@@ -580,8 +581,51 @@ GL_RGBA32UI	GL_RGBA	ui32	ui32	ui32	ui32	*/
             }
             return result;
         }
+
+
+        private void ToCoreImagePixel( GenericImage image, UInt32 level, UInt32 pixel, ref List<byte> pixels ) {
+            for ( uint channel = 0; channel < channelCount; ++channel ) {
+                pixels.AddRange( ToCoreImagePixelAtIndex( image.mipmapLevels[level].pixels, pixel, channel ) );
+            }
+        }
+
+        private void ToCoreImageLevel( GenericImage image, ref CoreTexture texture, UInt32 level ) {
+            UInt32 x = (UInt32)( (int)image.width >> (int)level );
+            UInt32 y = (UInt32)( (int)image.height >> (int)level );
+            UInt32 z = (UInt32)( (int)image.depth >> (int)level );
+            x = x < 1 ? 1 : x;
+            y = y < 1 ? 1 : y;
+            z = z < 1 ? 1 : z;
+            UInt32 pixels = image.faces * image.arrays * x * y * z;
+            texture.mipmapLevels[level] = new CoreTextureMipmapLevel();
+            List<byte> pixelBuf = new List<byte>();
+            for ( UInt32 pixel = 0; pixel < pixels; ++pixel ) {
+                ToCoreImagePixel( image, level, pixel, ref pixelBuf );
+            }
+            texture.mipmapLevels[level].pixels = pixelBuf.ToArray();
+        }
+
         public CoreTexture ToCoreTexture( GenericImage image ) {
-            return null;
+            CoreTexture result = new CoreTexture();
+            result.glType = glType;
+            result.glTypeSize = 1;
+            result.glFormat = glFormat;
+            result.glInternalFormat = glInternalFormat;
+            result.glBaseInternalFormat = glBaseInternalFormat;
+            result.pixelWidth = image.width;
+            result.pixelHeight = image.height;
+            result.pixelDepth = image.depth <= 1 ? 0 : image.depth;
+            result.numberOfArrayElements = image.arrays <= 1 ? 0 : image.arrays;
+            result.numberOfFaces = image.faces;
+            result.keyValuePairs = new CoreTextureKeyValuePair[1];
+            result.keyValuePairs[0] = new CoreTextureKeyValuePair();
+            result.keyValuePairs[0].key = "fileGenerator";
+            result.keyValuePairs[0].value = "KTXToolkit by Tiemo Jung";
+            result.mipmapLevels = new CoreTextureMipmapLevel[image.mipmapLevels.Length];
+            for ( UInt32 level = 0; level < result.mipmapLevels.Length; ++level ) {
+                ToCoreImageLevel( image, ref result, level );
+            }
+            return result;
         }
     }
 
@@ -589,6 +633,10 @@ GL_RGBA32UI	GL_RGBA	ui32	ui32	ui32	ui32	*/
         protected override double ToGenericImagePixelAtIndex( byte[] bytes, UInt32 pixel, uint channel ) {
             byte v = bytes[pixel * align + channel];
             return (double)v / 255.0;
+        }
+
+        protected override byte[] ToCoreImagePixelAtIndex( double[] value, UInt32 pixel, uint channel ) {
+            return new byte[1] { (byte)( value[pixel * channelCount + channel] * 255 ) };
         }
 
         public Format8UN( UInt32 type, UInt32 format, UInt32 intFormat, UInt32 baseIntFormat, uint channelCount_, uint align_, string name_ )
@@ -601,6 +649,10 @@ GL_RGBA32UI	GL_RGBA	ui32	ui32	ui32	ui32	*/
             return (double)v / UInt16.MaxValue;
         }
 
+        protected override byte[] ToCoreImagePixelAtIndex( double[] value, UInt32 pixel, uint channel ) {
+            return BitConverter.GetBytes( (UInt16)( value[pixel * channelCount + channel] * UInt16.MaxValue ) );
+        }
+
         public Format16UN( UInt32 type, UInt32 format, UInt32 intFormat, UInt32 baseIntFormat, uint channelCount_, uint align_, string name_ )
          : base( type, format, intFormat, baseIntFormat, channelCount_, align_, name_ ) { }
     }
@@ -609,6 +661,10 @@ GL_RGBA32UI	GL_RGBA	ui32	ui32	ui32	ui32	*/
         protected override double ToGenericImagePixelAtIndex( byte[] bytes, UInt32 pixel, uint channel ) {
             UInt32 v = BitConverter.ToUInt32( bytes, (int)( pixel * align + channel * 4 ) );
             return (double)v / UInt32.MaxValue;
+        }
+
+        protected override byte[] ToCoreImagePixelAtIndex( double[] value, UInt32 pixel, uint channel ) {
+            return BitConverter.GetBytes( (UInt32)( value[pixel * channelCount + channel] * UInt32.MaxValue ) );
         }
 
         public Format32UN( UInt32 type, UInt32 format, UInt32 intFormat, UInt32 baseIntFormat, uint channelCount_, uint align_, string name_ )
@@ -621,6 +677,10 @@ GL_RGBA32UI	GL_RGBA	ui32	ui32	ui32	ui32	*/
             return ( (double)v / 255.0 - 0.5 ) * 2.0;
         }
 
+        protected override byte[] ToCoreImagePixelAtIndex( double[] value, UInt32 pixel, uint channel ) {
+            return new byte[1] { (byte)( ( ( value[pixel * channelCount + channel] / 2.0 ) + 0.5 ) * 255 ) };
+        }
+
         public Format8SN( UInt32 type, UInt32 format, UInt32 intFormat, UInt32 baseIntFormat, uint channelCount_, uint align_, string name_ )
          : base( type, format, intFormat, baseIntFormat, channelCount_, align_, name_ ) { }
     }
@@ -628,7 +688,11 @@ GL_RGBA32UI	GL_RGBA	ui32	ui32	ui32	ui32	*/
     public class Format16SN : FromatBase, ITextureFormat {
         protected override double ToGenericImagePixelAtIndex( byte[] bytes, UInt32 pixel, uint channel ) {
             Int16 v = BitConverter.ToInt16( bytes, (int)( pixel * align + channel * 2 ) );
-            return (double)v / Int16.MaxValue;
+            return ( ( (double)v / Int16.MaxValue ) - 0.5 ) * 2.0;
+        }
+
+        protected override byte[] ToCoreImagePixelAtIndex( double[] value, UInt32 pixel, uint channel ) {
+            return BitConverter.GetBytes( (UInt16)( ( ( value[pixel * channelCount + channel] / 2.0 ) + 0.5 ) * UInt16.MaxValue ) );
         }
 
         public Format16SN( UInt32 type, UInt32 format, UInt32 intFormat, UInt32 baseIntFormat, uint channelCount_, uint align_, string name_ )
@@ -638,7 +702,11 @@ GL_RGBA32UI	GL_RGBA	ui32	ui32	ui32	ui32	*/
     public class Format32SN : FromatBase, ITextureFormat {
         protected override double ToGenericImagePixelAtIndex( byte[] bytes, UInt32 pixel, uint channel ) {
             Int32 v = BitConverter.ToInt32( bytes, (int)( pixel * align + channel * 2 ) );
-            return (double)v / Int32.MaxValue;
+            return ( ( (double)v / Int16.MaxValue ) - 0.5 ) * 2.0;
+        }
+
+        protected override byte[] ToCoreImagePixelAtIndex( double[] value, UInt32 pixel, uint channel ) {
+            return BitConverter.GetBytes( (Int32)( ( ( value[pixel * channelCount + channel] / 2.0 ) + 0.5 ) * Int32.MaxValue ) );
         }
 
         public Format32SN( UInt32 type, UInt32 format, UInt32 intFormat, UInt32 baseIntFormat, uint channelCount_, uint align_, string name_ )
