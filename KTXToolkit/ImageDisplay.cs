@@ -16,6 +16,40 @@ namespace KTXToolkit {
         private GenericImage genericTexture;
         private uint layer = 0;
         private uint mipmap = 0;
+
+        private IGLDataFormat GetDataFormat( UInt32 glName) {
+            foreach ( IPlugin plugin in PluginList ) {
+                foreach ( IGLDataFormat fmt in plugin.DataFormats ) {
+                    if ( fmt.Value == glName ) {
+                        return fmt;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private IGLPixelFormat GetPixelFormat( UInt32 glName ) {
+            foreach ( IPlugin plugin in PluginList ) {
+                foreach ( IGLPixelFormat fmt in plugin.PixelFormats ) {
+                    if ( fmt.Value == glName ) {
+                        return fmt;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private IGLInteralPixelFormat GetInternalPixelFormat( UInt32 glName ) {
+            foreach ( IPlugin plugin in PluginList ) {
+                foreach ( IGLInteralPixelFormat fmt in plugin.InternalPixelFormats ) {
+                    if ( fmt.Value == glName ) {
+                        return fmt;
+                    }
+                }
+            }
+            return null;
+        }
+
         /*
         private bool IsConveribleTo( ITextureFormat fmt ) {
             if ( texture.glType == 0 && texture.glFormat == 0 ) {
@@ -53,40 +87,25 @@ namespace KTXToolkit {
             return false;
         }*/
 
-        private void UpdateGenericImage() {/*
+        private void UpdateGenericImage() {
+            IGLDataFormat dataFormat = GetDataFormat( texture.glType );
+            IGLPixelFormat pixelFormat = GetPixelFormat( texture.glFormat );
+            IGLInteralPixelFormat internalPixelFormat = GetInternalPixelFormat( texture.glInternalFormat );
+
             genericTexture = null;
-            foreach ( IPlugin plugin in PluginList ) {
-                ITextureFormat[] fmtList = plugin.TextureFormats;
-                if ( null == fmtList ) {
-                    continue;
-                }
-
-                ITextureFormat bestMatch = null;
-                foreach ( ITextureFormat fmt in fmtList ) {
-                    if ( IsExactMatch (fmt) ) {
-                        bestMatch = fmt;
-                        break;
-                    }
-                    if ( IsConveribleTo (fmt) ) {
-                        bestMatch = fmt;
-                    }
-                }
-
-                if ( null != bestMatch ) {
-                    genericTexture = bestMatch.ToGenericImage( texture );
-                    if ( null != genericTexture ) {
-                        return;
-                    }
-                }
+            if ( internalPixelFormat != null ) {
+                genericTexture = internalPixelFormat.ToGenericImage( texture, pixelFormat, dataFormat );
             }
 
-            MessageBox.Show( this, "Unsupported format ( 0x" 
-                                   + texture.glType.ToString("X4") 
-                                   + ", 0x" 
-                                   + texture.glFormat.ToString("X4")
-                                   + ", 0x"
-                                   + texture.glInternalFormat.ToString("X4")
-                                   + ")", "Unsupported Format", MessageBoxButtons.OK, MessageBoxIcon.Error );*/
+            if ( genericTexture == null ) {
+                MessageBox.Show( this, "Unsupported format ( 0x"
+                                       + texture.glType.ToString( "X4" )
+                                       + ", 0x"
+                                       + texture.glFormat.ToString( "X4" )
+                                       + ", 0x"
+                                       + texture.glInternalFormat.ToString( "X4" )
+                                       + ")", "Unsupported Format", MessageBoxButtons.OK, MessageBoxIcon.Error );
+            }
         }
 
         private void BuildMipmaps() {
@@ -270,35 +289,15 @@ namespace KTXToolkit {
             return null;
         }
 
-        private void TransformTextureBack() {/*
-            foreach ( IPlugin plugin in PluginList ) {
-                ITextureFormat[] fmtList = plugin.TextureFormats;
-                if ( null == fmtList ) {
-                    continue;
-                }
+        private void TransformTextureBack() {
+            IGLDataFormat dataFormat = GetDataFormat( texture.glType );
+            IGLPixelFormat pixelFormat = GetPixelFormat( texture.glFormat );
+            IGLInteralPixelFormat internalPixelFormat = GetInternalPixelFormat( texture.glInternalFormat );
 
-                foreach ( ITextureFormat fmt in fmtList ) {
-                    if ( texture.glType == 0 && texture.glFormat == 0 ) {
-                        if ( fmt.glInternalFormat != texture.glInternalFormat ) {
-                            continue;
-                        }
-                    } else {
-                        if ( fmt.glType != texture.glType ) {
-                            continue;
-                        }
-
-                        if ( fmt.glFormat != texture.glFormat ) {
-                            continue;
-                        }
-                    }
-
-                    CoreTexture tex  = fmt.ToCoreTexture( genericTexture );
-                    if ( null != tex ) {
-                        texture = tex;
-                        return;
-                    }
-                }
-            }*/
+            CoreTexture tex = internalPixelFormat.ToCoreTexture( genericTexture, pixelFormat, dataFormat );
+            if ( tex != null ) {
+                texture = tex;
+            }
         }
 
         private void SaveTo(string path ) {

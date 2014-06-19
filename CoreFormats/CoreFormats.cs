@@ -885,7 +885,37 @@ namespace KTXToolkit {/*
         }
 
         public CoreTexture ToCoreTexture( GenericImage image, IGLPixelFormat pixelFormat, IGLDataFormat dataFormat ) {
-            return pixelFormat.ToCoreTexture( image, dataFormat );
+            CoreTexture tex = pixelFormat.ToCoreTexture( image, dataFormat );
+            if ( tex != null ) {
+                tex.glInternalFormat = Value;
+
+                switch ( GLValue ) {
+                    case Values.GL_RED:
+                        tex.glBaseInternalFormat = (UInt32)Values.GL_RED;
+                        break;
+                    case Values.GL_RGB:
+                    case Values.GL_R3_G3_B2:
+                    case Values.GL_RGB4:
+                    case Values.GL_RGB5:
+                    case Values.GL_RGB8:
+                    case Values.GL_RGB10:
+                    case Values.GL_RGB12:
+                    case Values.GL_RGB16:
+                        tex.glBaseInternalFormat = (UInt32)Values.GL_RGB;
+                        break;
+                    case Values.GL_RGBA:
+                    case Values.GL_RGBA2:
+                    case Values.GL_RGBA4:
+                    case Values.GL_RGB5_A1:
+                    case Values.GL_RGBA8:
+                    case Values.GL_RGB10_A2:
+                    case Values.GL_RGBA12:
+                    case Values.GL_RGBA16:
+                        tex.glBaseInternalFormat = (UInt32)Values.GL_RGBA;
+                        break;
+                }
+            }
+            return tex;
         }
     }
 
@@ -908,19 +938,61 @@ namespace KTXToolkit {/*
 
         public int Channels { get; set; }
 
-        public GenericImage ToGenericImage( CoreTexture texture, IGLDataFormat dataFormat ) {
-            GenericImage image = new GenericImage();
+        protected double ToGenericImagePixelAtPixel( CoreTexture texture, IGLDataFormat dataFormat, int mipIndex, int pixelIndex, int channelIndex ) {
+            long offset = pixelIndex * dataFormat.PixelSize( Channels );
+            return dataFormat.ToGenericFormat( texture.mipmapLevels[mipIndex].pixels, (int)offset, channelIndex, Channels );
+        }
 
-            if ( texture.glFormat == Value && dataFormat.Value != texture.glType ) {
+        protected List<double> ToGenericImagePixel( CoreTexture texture, IGLDataFormat dataFormat, int mipIndex, int pixelIndex ) {
+            List<double> byteBuffer = new List<double>();
+
+            for ( int channel = 0; channel < Channels; ++channel ) {
+                byteBuffer.Add( ToGenericImagePixelAtPixel( texture, dataFormat, mipIndex, pixelIndex, channel ) );
+            }
+
+            return byteBuffer;
+        }
+
+        protected List<double> ToGenericMipImage( CoreTexture texture, IGLDataFormat dataFormat, int mipIndex ) {
+            int x = (int)texture.pixelWidth >> (int)mipIndex;
+            int y = (int)texture.pixelHeight >> (int)mipIndex;
+            int z = (int)texture.pixelDepth >> (int)mipIndex;
+            x = x < 1 ? 1 : x;
+            y = y < 1 ? 1 : y;
+            z = z < 1 ? 1 : z;
+            int pixels = (int)( texture.numberOfFaces * Math.Max( 1, texture.numberOfArrayElements ) * x * y * z );
+
+            List<double> byteBuffer = new List<double>();
+            for ( int pixel = 0; pixel < pixels; ++pixel ) {
+                byteBuffer.AddRange( ToGenericImagePixel( texture, dataFormat, mipIndex, pixel ) );
+            }
+            return byteBuffer;
+
+        }
+
+        public GenericImage ToGenericImage( CoreTexture texture, IGLDataFormat dataFormat ) {
+            GenericImage image = null;
+
+            if ( texture.glFormat == Value && dataFormat.Value == texture.glType ) {
+                image = new GenericImage();
                 image.channels = (uint)Channels;
+                image.width = texture.pixelWidth;
+                image.height = texture.pixelHeight;
+                image.depth = texture.pixelDepth != 0 ? texture.pixelDepth : 1;
+                image.arrays = texture.numberOfArrayElements != 0 ? texture.numberOfArrayElements : 1;
+                image.faces = texture.numberOfFaces;
                 image.mipmapLevels = new GenericImageMipmapLevel[texture.mipmapLevels.Length];
+                for ( int level = 0; level < texture.mipmapLevels.Length; ++level ) {
+                    image.mipmapLevels[level] = new GenericImageMipmapLevel();
+                    image.mipmapLevels[level].pixels = ToGenericMipImage( texture, dataFormat, level ).ToArray();
+                }
             }
 
             return image;
         }
 
         protected byte[] ToCoreMipTexturePixelAtIndex( GenericImage image, IGLDataFormat dataFormat, int mipIndex, int pixelIndex, int channelIndex ) {
-            long offset = pixelIndex * image.channels + channelIndex;
+            long offset = pixelIndex * image.channels;
             return dataFormat.ToCoreFormat( image.mipmapLevels[mipIndex].pixels, (int)offset, channelIndex, (int)image.channels );
         }
 
@@ -954,11 +1026,16 @@ namespace KTXToolkit {/*
             CoreTexture texture = new CoreTexture();
             texture.glType = dataFormat.Value;
             texture.glFormat = Value;
+            texture.glTypeSize = 1;
+            texture.pixelWidth = image.width;
+            texture.pixelHeight = image.height;
+            texture.pixelDepth = image.depth == 1 ? 0 : image.depth;
+            texture.numberOfFaces = image.faces;
+            texture.numberOfArrayElements = image.arrays == 1 ? 0 : image.arrays;
 
             texture.mipmapLevels = new CoreTextureMipmapLevel[image.mipmapLevels.Length];
             for ( int mip = 0; mip < texture.mipmapLevels.Length; ++mip ) {
                 CoreTextureMipmapLevel mipTexture = new CoreTextureMipmapLevel();
-                GenericImageMipmapLevel mipImage = image.mipmapLevels[mip];
 
                 mipTexture.pixels = ToCoreMipTexture( image, dataFormat, mip ).ToArray();
                 texture.mipmapLevels[mip] = mipTexture;
@@ -1060,7 +1137,7 @@ namespace KTXToolkit {/*
 
         public double ToGenericFormat( byte[] data, int offset, int channel, int channels ) {
             int finalOffset = offset + PerChannelBits * RemapChannel( channel, channels );
-            return ToGenericFormatPixel( data, offset );
+            return ToGenericFormatPixel( data, finalOffset );
         }
     }
 
@@ -1075,10 +1152,10 @@ namespace KTXToolkit {/*
         CoreFormatsPlugin() {
             DataFormats = new IGLDataFormat[] {
                 new CoreDataFormatBase(Values.GL_BYTE,1,1 ),
-                new CoreDataFormatBase(Values.GL_UNSIGNED_BYTE,1,2 ),
-                new CoreDataFormatBase(Values.GL_SHORT,1,1 ),
-                new CoreDataFormatBase(Values.GL_UNSIGNED_SHORT,1,4 ),
-                new CoreDataFormatBase(Values.GL_INT,1,1 ),
+                new CoreDataFormatBase(Values.GL_UNSIGNED_BYTE,1,1 ),
+                new CoreDataFormatBase(Values.GL_SHORT,1,2 ),
+                new CoreDataFormatBase(Values.GL_UNSIGNED_SHORT,1,2 ),
+                new CoreDataFormatBase(Values.GL_INT,1,4 ),
                 new CoreDataFormatBase(Values.GL_UNSIGNED_INT,1,4 ),
                 new CoreDataFormatBase(Values.GL_FLOAT,1,4 ),
                 new CoreDataFormatBase(Values.GL_DOUBLE,1,8 )
