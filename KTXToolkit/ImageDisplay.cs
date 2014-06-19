@@ -298,7 +298,7 @@ namespace KTXToolkit {
             if ( tex != null ) {
                 texture = tex;
             } else {
-                MessageBox.Show( "Unable to store image data", "Error while converting image data", MessageBoxButtons.OK, MessageBoxIcon.Error );
+                MessageBox.Show( "Unable to convert image data", "Error while converting image data", MessageBoxButtons.OK, MessageBoxIcon.Error );
             }
         }
 
