@@ -297,6 +297,8 @@ namespace KTXToolkit {
             CoreTexture tex = internalPixelFormat.ToCoreTexture( genericTexture, pixelFormat, dataFormat );
             if ( tex != null ) {
                 texture = tex;
+            } else {
+                MessageBox.Show( "Unable to store image data", "Error while converting image data", MessageBoxButtons.OK, MessageBoxIcon.Error );
             }
         }
 
