@@ -22,14 +22,21 @@ namespace KTXToolkit
             }
             foreach (IPlugin plugin in PluginList)
             {
-                ITextureFormat[] formats = plugin.TextureFormats;
-                if ( null == formats ) {
-                    continue;
-                }
-                foreach (ITextureFormat format in formats )
-                {
-                    comboBoxTextureFormats.Items.Add(format);
-                }
+                comboBoxInternalFormat.Items.AddRange( plugin.InternalPixelFormats );
+                comboBoxDataType.Items.AddRange( plugin.DataFormats );
+                comboBoxDataFormat.Items.AddRange( plugin.PixelFormats );
+            }
+
+            if ( comboBoxInternalFormat.Items.Count > 0 ) {
+                comboBoxInternalFormat.SelectedIndex = 0;
+            }
+
+            if ( comboBoxDataType.Items.Count > 0 ) {
+                comboBoxDataType.SelectedIndex = 0;
+            }
+
+            if ( comboBoxDataFormat.Items.Count > 0 ) {
+                comboBoxDataFormat.SelectedIndex = 0;
             }
         }
         public CreateNewTextureForm(IPlugin[] plugins)
@@ -122,6 +129,22 @@ namespace KTXToolkit
             textBoxHeight.Enabled = true;
             textBoxDepth.Enabled = false;
             textBoxArrayLayers.Enabled = true;
+        }
+
+        private void buttonCalculateMipLength_Click( object sender, EventArgs e ) {
+            int max = textBoxWidth.IntValue;
+            if ( textBoxHeight.Enabled ) {
+                max = Math.Max( max, textBoxHeight.IntValue );
+            }
+            if ( textBoxDepth.Enabled ) {
+                max = Math.Max( max, textBoxDepth.IntValue );
+            }
+
+            int level = 1;
+            for ( ; max >> level > 0; ++level ) {
+
+            }
+            textBoxMipMaps.Text = level.ToString();
         }
     }
 }

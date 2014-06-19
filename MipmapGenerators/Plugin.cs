@@ -100,20 +100,18 @@ namespace KTXToolkit {
             }
         }
 
-        public ITextureFormat[] TextureFormats {
-            get {
-                return null;
-            }
-        }
-        public ITextureContainer[] TextureContainer {
-            get {
-                return null;
-            }
-        }
-        public IMipmapGenerator[] MipmapGenerators {
-            get {
-                return new IMipmapGenerator[1] { new MipmapGenBox() };
-            }
+        public ITextureContainer[] TextureContainer { get; set; }
+        public IMipmapGenerator[] MipmapGenerators { get; set; }
+        public IGLInteralPixelFormat[] InternalPixelFormats { get; set; }
+        public IGLPixelFormat[] PixelFormats { get; set; }
+        public IGLDataFormat[] DataFormats { get; set; }
+
+        Plugin() {
+            TextureContainer = new ITextureContainer[] { };
+            MipmapGenerators = new IMipmapGenerator[] { new MipmapGenBox() };
+            InternalPixelFormats = new IGLInteralPixelFormat[] { };
+            PixelFormats = new IGLPixelFormat[] { };
+            DataFormats = new IGLDataFormat[] { };
         }
     }
 }

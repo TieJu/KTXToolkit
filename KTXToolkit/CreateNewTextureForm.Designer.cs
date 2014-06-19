@@ -43,9 +43,15 @@
             this.labelHeight = new System.Windows.Forms.Label();
             this.labelWidth = new System.Windows.Forms.Label();
             this.groupBoxTextureFormat = new System.Windows.Forms.GroupBox();
-            this.comboBoxTextureFormats = new System.Windows.Forms.ComboBox();
+            this.comboBoxDataType = new System.Windows.Forms.ComboBox();
+            this.labelDataType = new System.Windows.Forms.Label();
+            this.comboBoxDataFormat = new System.Windows.Forms.ComboBox();
+            this.labelDataFormat = new System.Windows.Forms.Label();
+            this.comboBoxInternalFormat = new System.Windows.Forms.ComboBox();
+            this.labelInternalFormat = new System.Windows.Forms.Label();
             this.buttonOK = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
+            this.buttonCalculateMipLength = new System.Windows.Forms.Button();
             this.textBoxMipMaps = new KTXToolkit.NumericTextBox();
             this.textBoxArrayLayers = new KTXToolkit.NumericTextBox();
             this.textBoxDepth = new KTXToolkit.NumericTextBox();
@@ -158,6 +164,7 @@
             // 
             // groupBoxDimensions
             // 
+            this.groupBoxDimensions.Controls.Add(this.buttonCalculateMipLength);
             this.groupBoxDimensions.Controls.Add(this.labelMipMapLevels);
             this.groupBoxDimensions.Controls.Add(this.textBoxMipMaps);
             this.groupBoxDimensions.Controls.Add(this.labelArrayLayers);
@@ -222,27 +229,76 @@
             // 
             // groupBoxTextureFormat
             // 
-            this.groupBoxTextureFormat.Controls.Add(this.comboBoxTextureFormats);
+            this.groupBoxTextureFormat.Controls.Add(this.comboBoxDataType);
+            this.groupBoxTextureFormat.Controls.Add(this.labelDataType);
+            this.groupBoxTextureFormat.Controls.Add(this.comboBoxDataFormat);
+            this.groupBoxTextureFormat.Controls.Add(this.labelDataFormat);
+            this.groupBoxTextureFormat.Controls.Add(this.comboBoxInternalFormat);
+            this.groupBoxTextureFormat.Controls.Add(this.labelInternalFormat);
             this.groupBoxTextureFormat.Location = new System.Drawing.Point(13, 254);
             this.groupBoxTextureFormat.Name = "groupBoxTextureFormat";
-            this.groupBoxTextureFormat.Size = new System.Drawing.Size(290, 53);
+            this.groupBoxTextureFormat.Size = new System.Drawing.Size(290, 152);
             this.groupBoxTextureFormat.TabIndex = 2;
             this.groupBoxTextureFormat.TabStop = false;
-            this.groupBoxTextureFormat.Text = "Texture Format";
+            this.groupBoxTextureFormat.Text = "Format";
             // 
-            // comboBoxTextureFormats
+            // comboBoxDataType
             // 
-            this.comboBoxTextureFormats.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxTextureFormats.FormattingEnabled = true;
-            this.comboBoxTextureFormats.Location = new System.Drawing.Point(9, 20);
-            this.comboBoxTextureFormats.Name = "comboBoxTextureFormats";
-            this.comboBoxTextureFormats.Size = new System.Drawing.Size(265, 21);
-            this.comboBoxTextureFormats.TabIndex = 0;
-            this.comboBoxTextureFormats.SelectedIndexChanged += new System.EventHandler(this.comboBoxTextureFormats_SelectedIndexChanged);
+            this.comboBoxDataType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxDataType.FormattingEnabled = true;
+            this.comboBoxDataType.Location = new System.Drawing.Point(7, 121);
+            this.comboBoxDataType.Name = "comboBoxDataType";
+            this.comboBoxDataType.Size = new System.Drawing.Size(275, 21);
+            this.comboBoxDataType.TabIndex = 6;
+            // 
+            // labelDataType
+            // 
+            this.labelDataType.AutoSize = true;
+            this.labelDataType.Location = new System.Drawing.Point(7, 105);
+            this.labelDataType.Name = "labelDataType";
+            this.labelDataType.Size = new System.Drawing.Size(57, 13);
+            this.labelDataType.TabIndex = 5;
+            this.labelDataType.Text = "Data Type";
+            // 
+            // comboBoxDataFormat
+            // 
+            this.comboBoxDataFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxDataFormat.FormattingEnabled = true;
+            this.comboBoxDataFormat.Location = new System.Drawing.Point(7, 77);
+            this.comboBoxDataFormat.Name = "comboBoxDataFormat";
+            this.comboBoxDataFormat.Size = new System.Drawing.Size(275, 21);
+            this.comboBoxDataFormat.TabIndex = 4;
+            // 
+            // labelDataFormat
+            // 
+            this.labelDataFormat.AutoSize = true;
+            this.labelDataFormat.Location = new System.Drawing.Point(7, 60);
+            this.labelDataFormat.Name = "labelDataFormat";
+            this.labelDataFormat.Size = new System.Drawing.Size(65, 13);
+            this.labelDataFormat.TabIndex = 3;
+            this.labelDataFormat.Text = "Data Format";
+            // 
+            // comboBoxInternalFormat
+            // 
+            this.comboBoxInternalFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxInternalFormat.FormattingEnabled = true;
+            this.comboBoxInternalFormat.Location = new System.Drawing.Point(7, 32);
+            this.comboBoxInternalFormat.Name = "comboBoxInternalFormat";
+            this.comboBoxInternalFormat.Size = new System.Drawing.Size(275, 21);
+            this.comboBoxInternalFormat.TabIndex = 2;
+            // 
+            // labelInternalFormat
+            // 
+            this.labelInternalFormat.AutoSize = true;
+            this.labelInternalFormat.Location = new System.Drawing.Point(4, 16);
+            this.labelInternalFormat.Name = "labelInternalFormat";
+            this.labelInternalFormat.Size = new System.Drawing.Size(77, 13);
+            this.labelInternalFormat.TabIndex = 1;
+            this.labelInternalFormat.Text = "Internal Format";
             // 
             // buttonOK
             // 
-            this.buttonOK.Location = new System.Drawing.Point(12, 313);
+            this.buttonOK.Location = new System.Drawing.Point(12, 412);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 3;
@@ -252,13 +308,23 @@
             // 
             // buttonCancel
             // 
-            this.buttonCancel.Location = new System.Drawing.Point(93, 313);
+            this.buttonCancel.Location = new System.Drawing.Point(93, 412);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 4;
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             this.buttonCancel.Click += new System.EventHandler(this.buttonCancel_Click);
+            // 
+            // buttonCalculateMipLength
+            // 
+            this.buttonCalculateMipLength.Location = new System.Drawing.Point(129, 74);
+            this.buttonCalculateMipLength.Name = "buttonCalculateMipLength";
+            this.buttonCalculateMipLength.Size = new System.Drawing.Size(139, 23);
+            this.buttonCalculateMipLength.TabIndex = 10;
+            this.buttonCalculateMipLength.Text = "Calculate MipMip Levels";
+            this.buttonCalculateMipLength.UseVisualStyleBackColor = true;
+            this.buttonCalculateMipLength.Click += new System.EventHandler(this.buttonCalculateMipLength_Click);
             // 
             // textBoxMipMaps
             // 
@@ -309,7 +375,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(315, 343);
+            this.ClientSize = new System.Drawing.Size(315, 442);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOK);
             this.Controls.Add(this.groupBoxTextureFormat);
@@ -323,6 +389,7 @@
             this.groupBoxDimensions.ResumeLayout(false);
             this.groupBoxDimensions.PerformLayout();
             this.groupBoxTextureFormat.ResumeLayout(false);
+            this.groupBoxTextureFormat.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -344,7 +411,6 @@
         private System.Windows.Forms.Label labelMipMapLevels;
         private System.Windows.Forms.Label labelArrayLayers;
         private System.Windows.Forms.GroupBox groupBoxTextureFormat;
-        private System.Windows.Forms.ComboBox comboBoxTextureFormats;
         private System.Windows.Forms.Button buttonOK;
         private System.Windows.Forms.Button buttonCancel;
         private NumericTextBox textBoxMipMaps;
@@ -352,5 +418,12 @@
         private NumericTextBox textBoxDepth;
         private NumericTextBox textBoxHeight;
         private NumericTextBox textBoxWidth;
+        private System.Windows.Forms.ComboBox comboBoxInternalFormat;
+        private System.Windows.Forms.Label labelInternalFormat;
+        private System.Windows.Forms.ComboBox comboBoxDataFormat;
+        private System.Windows.Forms.Label labelDataFormat;
+        private System.Windows.Forms.ComboBox comboBoxDataType;
+        private System.Windows.Forms.Label labelDataType;
+        private System.Windows.Forms.Button buttonCalculateMipLength;
     }
 }

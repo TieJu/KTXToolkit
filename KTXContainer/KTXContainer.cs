@@ -67,7 +67,7 @@ namespace KTXToolkit {
             byteReader( padding );
             bytesRead += padding + 4;
 
-            CoreTextureKeyValuePair pair = new CoreTextureKeyValuePair();
+            
 
             int count = 1;
             for ( ; count < dataSet.Length; ++count ) {
@@ -83,10 +83,7 @@ namespace KTXToolkit {
                 }
             }
 
-            pair.key = transform.GetString( dataSet, 0, count );
-            pair.value = transform.GetString( dataSet, count + 1, end - count );
-
-            return pair;
+            return new CoreTextureKeyValuePair( transform.GetString( dataSet, 0, count ), transform.GetString( dataSet, count + 1, end - count ) );
         }
 
         void readKeyValuePairsFromBinaryReader( Func<UInt32> uintReader, Func<UInt32, byte[]> byteReader, UInt32 bytesOfKeyValueData, ref CoreTexture resultTexture ) {
@@ -255,20 +252,18 @@ namespace KTXToolkit {
 
     [Export(typeof(IPlugin))]
     class KTXPlugin : IPlugin {
-        public ITextureFormat[] TextureFormats {
-            get {
-                return null;
-            }
-        }
-        public ITextureContainer[] TextureContainer {
-            get {
-                return new ITextureContainer[1] { new KTXContainer() };
-            }
-        }
-        public IMipmapGenerator[] MipmapGenerators {
-            get {
-                return null;
-            }
+        public ITextureContainer[] TextureContainer { get; set; }
+        public IMipmapGenerator[] MipmapGenerators { get; set; }
+        public IGLInteralPixelFormat[] InternalPixelFormats { get; set; }
+        public IGLPixelFormat[] PixelFormats { get; set; }
+        public IGLDataFormat[] DataFormats { get; set; }
+
+        KTXPlugin() {
+            TextureContainer = new ITextureContainer[] { new KTXContainer() };
+            MipmapGenerators = new IMipmapGenerator[] { };
+            InternalPixelFormats = new IGLInteralPixelFormat[] { };
+            PixelFormats = new IGLPixelFormat[] { };
+            DataFormats = new IGLDataFormat[] { };
         }
     }
 }

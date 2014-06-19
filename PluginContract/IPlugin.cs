@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace KTXToolkit
 {
     public class CoreTextureKeyValuePair {
+        public CoreTextureKeyValuePair(string key_, string value_) { key = key_; value = value_; }
         public string key;
         public string value;
     }
@@ -76,13 +77,26 @@ namespace KTXToolkit
         }
     }
 
-    public interface ITextureFormat {
-        UInt32 glType { get; }
-        UInt32 glFormat { get; }
-        UInt32 glInternalFormat { get; }
-        UInt32 glBaseInternalFormat { get; }
-        GenericImage ToGenericImage( CoreTexture texture );
-        CoreTexture ToCoreTexture( GenericImage image );
+    public interface IGLDataFormat {
+        UInt32 Value { get; }
+        int PixelSize(int channels);
+        byte[] ToCoreFormat(double[] values, int offset, int channel, int channels);
+        double ToGenericFormat(byte[] data, int offset, int channel, int channels);
+    }
+
+    public interface IGLPixelFormat {
+        UInt32 Value { get; }
+        int Channels { get; }
+        GenericImage ToGenericImage( CoreTexture texture, IGLDataFormat dataFormat );
+        CoreTexture ToCoreTexture( GenericImage image, IGLDataFormat dataFormat );
+    }
+
+    public interface IGLInteralPixelFormat {
+        UInt32 Value { get; }
+        bool IsCompressed { get; }
+        bool IsCompatible( IGLPixelFormat pixelFormat, IGLDataFormat dataFormat);
+        GenericImage ToGenericImage( CoreTexture texture, IGLPixelFormat pixelFormat, IGLDataFormat dataFormat );
+        CoreTexture ToCoreTexture( GenericImage image, IGLPixelFormat pixelFormat, IGLDataFormat dataFormat );
     }
 
     public interface IMipmapGenerator {
@@ -91,8 +105,10 @@ namespace KTXToolkit
 
     public interface IPlugin
     {
-        ITextureFormat[] TextureFormats { get; }
         ITextureContainer[] TextureContainer { get; }
         IMipmapGenerator[] MipmapGenerators { get; }
+        IGLInteralPixelFormat[] InternalPixelFormats { get; }
+        IGLPixelFormat[] PixelFormats { get; }
+        IGLDataFormat[] DataFormats { get; }
     }
 }

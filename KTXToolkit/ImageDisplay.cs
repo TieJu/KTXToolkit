@@ -16,8 +16,44 @@ namespace KTXToolkit {
         private GenericImage genericTexture;
         private uint layer = 0;
         private uint mipmap = 0;
+        /*
+        private bool IsConveribleTo( ITextureFormat fmt ) {
+            if ( texture.glType == 0 && texture.glFormat == 0 ) {
+                return ( texture.glInternalFormat == fmt.glInternalFormat.value );
+            } else {
+                foreach ( IGLValue value in fmt.glTypes ) {
+                    if ( value.value == texture.glType ) {
+                        foreach ( IGLValue value2 in fmt.glFormats ) {
+                            if ( value.value == texture.glFormat ) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
+        }
+        *//*
+        private bool IsExactMatch( ITextureFormat fmt ) {
+            if ( texture.glInternalFormat == fmt.glInternalFormat.value ) {
+                if ( texture.glType == 0 && texture.glFormat == 0 ) {
+                    return true;
+                } else {
+                    foreach ( IGLValue value in fmt.glTypes ) {
+                        if ( value.value == texture.glType ) {
+                            foreach ( IGLValue value2 in fmt.glFormats ) {
+                                if ( value.value == texture.glFormat ) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        }*/
 
-        private void UpdateGenericImage() {
+        private void UpdateGenericImage() {/*
             genericTexture = null;
             foreach ( IPlugin plugin in PluginList ) {
                 ITextureFormat[] fmtList = plugin.TextureFormats;
@@ -25,22 +61,19 @@ namespace KTXToolkit {
                     continue;
                 }
 
+                ITextureFormat bestMatch = null;
                 foreach ( ITextureFormat fmt in fmtList ) {
-                    if ( texture.glType == 0 && texture.glFormat == 0 ) {
-                        if ( fmt.glInternalFormat != texture.glInternalFormat ) {
-                            continue;
-                        }
-                    } else {
-                        if ( fmt.glType != texture.glType ) {
-                            continue;
-                        }
-
-                        if ( fmt.glFormat != texture.glFormat ) {
-                            continue;
-                        }
+                    if ( IsExactMatch (fmt) ) {
+                        bestMatch = fmt;
+                        break;
                     }
+                    if ( IsConveribleTo (fmt) ) {
+                        bestMatch = fmt;
+                    }
+                }
 
-                    genericTexture = fmt.ToGenericImage( texture );
+                if ( null != bestMatch ) {
+                    genericTexture = bestMatch.ToGenericImage( texture );
                     if ( null != genericTexture ) {
                         return;
                     }
@@ -53,7 +86,7 @@ namespace KTXToolkit {
                                    + texture.glFormat.ToString("X4")
                                    + ", 0x"
                                    + texture.glInternalFormat.ToString("X4")
-                                   + ")", "Unsupported Format", MessageBoxButtons.OK, MessageBoxIcon.Error );
+                                   + ")", "Unsupported Format", MessageBoxButtons.OK, MessageBoxIcon.Error );*/
         }
 
         private void BuildMipmaps() {
@@ -237,7 +270,7 @@ namespace KTXToolkit {
             return null;
         }
 
-        private void TransformTextureBack() {
+        private void TransformTextureBack() {/*
             foreach ( IPlugin plugin in PluginList ) {
                 ITextureFormat[] fmtList = plugin.TextureFormats;
                 if ( null == fmtList ) {
@@ -265,7 +298,7 @@ namespace KTXToolkit {
                         return;
                     }
                 }
-            }
+            }*/
         }
 
         private void SaveTo(string path ) {
