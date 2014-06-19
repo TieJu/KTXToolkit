@@ -37,6 +37,7 @@
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.keyValuePairsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -117,7 +118,8 @@
             // 
             this.viewToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mipmapLevelToolStripMenuItem,
-            this.layerToolStripMenuItem});
+            this.layerToolStripMenuItem,
+            this.keyValuePairsToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "View";
@@ -155,6 +157,13 @@
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
             // 
+            // keyValuePairsToolStripMenuItem
+            // 
+            this.keyValuePairsToolStripMenuItem.Name = "keyValuePairsToolStripMenuItem";
+            this.keyValuePairsToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.keyValuePairsToolStripMenuItem.Text = "Key Value Pairs";
+            this.keyValuePairsToolStripMenuItem.Click += new System.EventHandler(this.keyValuePairsToolStripMenuItem_Click);
+            // 
             // ImageDisplay
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -191,5 +200,6 @@
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem keyValuePairsToolStripMenuItem;
     }
 }

@@ -50,43 +50,6 @@ namespace KTXToolkit {
             return null;
         }
 
-        /*
-        private bool IsConveribleTo( ITextureFormat fmt ) {
-            if ( texture.glType == 0 && texture.glFormat == 0 ) {
-                return ( texture.glInternalFormat == fmt.glInternalFormat.value );
-            } else {
-                foreach ( IGLValue value in fmt.glTypes ) {
-                    if ( value.value == texture.glType ) {
-                        foreach ( IGLValue value2 in fmt.glFormats ) {
-                            if ( value.value == texture.glFormat ) {
-                                return true;
-                            }
-                        }
-                    }
-                }
-                return false;
-            }
-        }
-        *//*
-        private bool IsExactMatch( ITextureFormat fmt ) {
-            if ( texture.glInternalFormat == fmt.glInternalFormat.value ) {
-                if ( texture.glType == 0 && texture.glFormat == 0 ) {
-                    return true;
-                } else {
-                    foreach ( IGLValue value in fmt.glTypes ) {
-                        if ( value.value == texture.glType ) {
-                            foreach ( IGLValue value2 in fmt.glFormats ) {
-                                if ( value.value == texture.glFormat ) {
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return false;
-        }*/
-
         private void UpdateGenericImage() {
             IGLDataFormat dataFormat = GetDataFormat( texture.glType );
             IGLPixelFormat pixelFormat = GetPixelFormat( texture.glFormat );
@@ -323,6 +286,12 @@ namespace KTXToolkit {
             if ( sfdlg.ShowDialog() == DialogResult.OK ) {
                 SaveTo( sfdlg.FileName );
             }
+        }
+
+        private void keyValuePairsToolStripMenuItem_Click( object sender, EventArgs e ) {
+            KeyValuePairDisplay kvDisplay = new KeyValuePairDisplay( texture.keyValuePairs );
+            kvDisplay.ShowDialog( this );
+            texture.keyValuePairs = kvDisplay.KeyValuePairs.ToArray();
         }
     }
 }
