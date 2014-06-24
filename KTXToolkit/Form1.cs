@@ -63,9 +63,10 @@ namespace KTXToolkit
                     }
                     filter = filter.TrimEnd( ',', ' ' ) + ")|";
                     filter += mask.TrimEnd( ';' );
+                    filter += "|";
                 }
             }
-            return filter;
+            return filter.TrimEnd( '|' );
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)

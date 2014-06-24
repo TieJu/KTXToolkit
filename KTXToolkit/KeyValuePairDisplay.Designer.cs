@@ -37,9 +37,9 @@
             this.dataGridViewKeyValuePairs.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Key,
             this.Value});
-            this.dataGridViewKeyValuePairs.Location = new System.Drawing.Point(13, 12);
+            this.dataGridViewKeyValuePairs.Location = new System.Drawing.Point(12, 12);
             this.dataGridViewKeyValuePairs.Name = "dataGridViewKeyValuePairs";
-            this.dataGridViewKeyValuePairs.Size = new System.Drawing.Size(443, 139);
+            this.dataGridViewKeyValuePairs.Size = new System.Drawing.Size(444, 135);
             this.dataGridViewKeyValuePairs.TabIndex = 0;
             // 
             // buttonOK
@@ -82,10 +82,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(468, 193);
+            this.ClientSize = new System.Drawing.Size(469, 193);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOK);
             this.Controls.Add(this.dataGridViewKeyValuePairs);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "KeyValuePairDisplay";
             this.Text = "KeyValuePairDisplay";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewKeyValuePairs)).EndInit();
