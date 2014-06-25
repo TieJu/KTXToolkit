@@ -31,12 +31,6 @@ namespace KTXToolkit
         public CoreTextureMipmapLevel[] mipmapLevels;
     }
 
-    public interface ITextureContainer {
-        string[] extensions { get; }
-        CoreTexture Load(string path);
-        void Store(string path, CoreTexture texture);
-    }
-
     public class GenericImageMipmapLevel {
         public double[] pixels;
     }
@@ -75,6 +69,13 @@ namespace KTXToolkit
             uint offset = ( w * h * depth_ + w * height_ + width_ ) * channels + channel_;
             mipmapLevels[mipmap_].pixels[array_ * image + offset] = value_;
         }
+    }
+
+    public interface ITextureContainer {
+        string[] extensions { get; }
+        CoreTexture Load( string path );
+        // texture and image contain the same image, for some containers its easyer to use image instead of texture
+        void Store( string path, CoreTexture texture, GenericImage image );
     }
 
     public interface IGLDataFormat {

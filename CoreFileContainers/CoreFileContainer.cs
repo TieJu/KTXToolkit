@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel.Composition;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace KTXToolkit {
     public class CoreFileContainer : ITextureContainer {
@@ -82,7 +83,51 @@ namespace KTXToolkit {
             return texture;
         }
 
-        public void Store( string path, CoreTexture texture ) {
+        public void Store( string path, CoreTexture texture, GenericImage image ) {
+            if ( image.depth > 1 ) {
+                MessageBox.Show( "The image is a volumetric image, the container format can not store volumetric images"
+                               , "Inconpatible image type"
+                               , MessageBoxButtons.OK
+                               , MessageBoxIcon.Error );
+                return;
+            }
+            if ( image.arrays > 1 ) {
+                MessageBox.Show( "The image is a array of images, the container format can not store an array of images"
+                               , "Inconpatible image type"
+                               , MessageBoxButtons.OK
+                               , MessageBoxIcon.Error );
+                return;
+            }
+            if ( image.faces > 1 ) {
+                MessageBox.Show( "The image is a cubemap image, the container format can not store a cubemap image"
+                               , "Inconpatible image type"
+                               , MessageBoxButtons.OK
+                               , MessageBoxIcon.Error );
+                return;
+            }
+            if ( image.mipmapLevels.Length > 1 ) {
+                MessageBox.Show( "The image has multiple mipmap levels, the container format does not support mipmap images, ony the first mipmap image is store"
+                               , "Container can't store mipmaps"
+                               , MessageBoxButtons.OK
+                               , MessageBoxIcon.Information );
+            }
+
+            int[] buf = new int[] { 0, 0, 0, 255 };
+            System.Drawing.Imaging.PixelFormat pfm = System.Drawing.Imaging.PixelFormat.Canonical;
+            if ( image.channels <= 3 ) {
+                pfm = System.Drawing.Imaging.PixelFormat.Format24bppRgb;
+            }
+            Bitmap bitmap = new Bitmap( (int)texture.pixelWidth, (int)texture.pixelHeight, pfm );
+            for ( int y = 0; y < bitmap.Height; ++y ) {
+                for ( int x = 0; x < bitmap.Width; ++x ) {
+                    for ( int c = 0; c < image.channels; ++c ) {
+                        buf[c] = (byte)( ( image.mipmapLevels[0].pixels[( x + y * image.width ) * image.channels + c] ) * 255 );
+                    }
+                    bitmap.SetPixel( x, y, Color.FromArgb( buf[3], buf[0], buf[1], buf[2] ) );
+                }
+            }
+
+            bitmap.Save( path );
         }
     }
 

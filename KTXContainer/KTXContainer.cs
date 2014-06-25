@@ -237,7 +237,7 @@ namespace KTXToolkit {
             WriteImages( writer, texture );
         }
 
-        public void Store( string path, CoreTexture texture ) {
+        public void Store( string path, CoreTexture texture, GenericImage image ) {
             FileStream file = new FileStream( path, FileMode.Create, FileAccess.Write );
             if ( file == null ) {
                 return;

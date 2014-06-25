@@ -229,9 +229,10 @@ namespace KTXToolkit {
                     }
                     filter = filter.TrimEnd( ',', ' ' ) + ")|";
                     filter += mask.TrimEnd( ';' );
+                    filter += "|";
                 }
             }
-            return filter;
+            return filter.TrimEnd( '|' );
         }
 
         // FIXME: copy paste from Form1
@@ -270,7 +271,7 @@ namespace KTXToolkit {
             ITextureContainer container = GetContainerFromExtension( ext );
             if ( container != null ) {
                 TransformTextureBack();
-                container.Store( path, texture );
+                container.Store( path, texture, genericTexture );
             }
         }
 
