@@ -13,6 +13,8 @@ namespace KTXToolkit
     }
 
     public class CoreTextureMipmapLevel {
+        public CoreTextureMipmapLevel() { }
+        public CoreTextureMipmapLevel(long count) { pixels = new byte[count]; }
         public byte[] pixels;
     }
 
@@ -32,6 +34,8 @@ namespace KTXToolkit
     }
 
     public class GenericImageMipmapLevel {
+        public GenericImageMipmapLevel() { }
+        public GenericImageMipmapLevel(long count) { pixels = new double[count]; }
         public double[] pixels;
     }
 

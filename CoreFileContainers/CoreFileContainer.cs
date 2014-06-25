@@ -64,11 +64,10 @@ namespace KTXToolkit {
             texture.numberOfFaces = 1;
             texture.keyValuePairs = new CoreTextureKeyValuePair[0];
             texture.mipmapLevels = new CoreTextureMipmapLevel[1];
-            texture.mipmapLevels[0] = new CoreTextureMipmapLevel();
-            texture.mipmapLevels[0].pixels = new byte[texture.pixelWidth * texture.pixelHeight * channels];
+            texture.mipmapLevels[0] = new CoreTextureMipmapLevel( texture.pixelWidth * texture.pixelHeight * channels );
             byte[] pixBuf = new byte[] { 0, 0, 0, 1 };
-            for ( int x = 0; x < texture.pixelWidth; ++x ) {
-                for ( int y = 0; y < texture.pixelHeight; ++y ) {
+            for ( int y = 0; y < texture.pixelHeight; ++y ) {
+                for ( int x = 0; x < texture.pixelWidth; ++x ) {
                     Color color = image.GetPixel( x, y );
                     pixBuf[0] = color.R;
                     pixBuf[1] = color.G;
