@@ -6,14 +6,11 @@ using System.Text;
 
 namespace KTXToolkit {
     class KTXContainer : ITextureContainer {
+        public KTXContainer() { extensions = new string[] { ".ktx" }; }
         public override string ToString() {
             return "KTX Image";
         }
-        public string[] extensions {
-            get {
-                return new string[] { ".ktx" };
-            }
-        }
+        public string[] extensions { get; set; }
 
         bool validateHeader( BinaryReader reader ) {
             byte[] magic = new byte[12] { 0xAB, 0x4B, 0x54, 0x58, 0x20, 0x31, 0x31, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A };

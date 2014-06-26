@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MipmapGenerators", "MipmapG
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreFileContainers", "CoreFileContainers\CoreFileContainers.csproj", "{E5A41B81-AEC8-4A56-AD42-EA87370C4CCD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TGAContainer", "TGAContainer\TGAContainer.csproj", "{97F32C6A-4099-46BA-94DB-EE18653BD4DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +50,10 @@ Global
 		{E5A41B81-AEC8-4A56-AD42-EA87370C4CCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5A41B81-AEC8-4A56-AD42-EA87370C4CCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5A41B81-AEC8-4A56-AD42-EA87370C4CCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97F32C6A-4099-46BA-94DB-EE18653BD4DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97F32C6A-4099-46BA-94DB-EE18653BD4DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97F32C6A-4099-46BA-94DB-EE18653BD4DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97F32C6A-4099-46BA-94DB-EE18653BD4DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

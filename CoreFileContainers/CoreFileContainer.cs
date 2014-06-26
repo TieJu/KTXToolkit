@@ -8,14 +8,13 @@ using System.Windows.Forms;
 
 namespace KTXToolkit {
     public class CoreFileContainer : ITextureContainer {
+        public CoreFileContainer() {
+            extensions = new string[] { ".bmp", ".gif", ".jpg", ".png", ".tif", ".tiff" };
+        }
         public override string ToString() {
             return "Image";
         }
-        public string[] extensions {
-            get {
-                return new string[] { ".bmp", ".gif", ".exif", ".jpg", ".png", ".tiff" };
-            }
-        }
+        public string[] extensions { get; set; }
 
         public CoreTexture Load( string path ) {
             Bitmap image = new Bitmap( path );
