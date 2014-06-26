@@ -21,15 +21,15 @@ namespace KTXToolkit {
         }
 
         public CoreTexture Load( string path ) {
-            FileStream file = new FileStream( path, FileMode.Open, FileAccess.Read );
-            if ( file == null ) {
-                return null;
-            }
+            using ( FileStream file = new FileStream( path, FileMode.Open, FileAccess.Read ) ) {
+                if ( file == null ) {
+                    return null;
+                }
 
-            BinaryReader fileReader = new BinaryReader( file );
-            CoreTexture tex = ReadFromBinaryReader( fileReader );
-            file.Dispose();
-            return tex;
+                BinaryReader fileReader = new BinaryReader( file );
+                CoreTexture tex = ReadFromBinaryReader( fileReader );
+                return tex;
+            }
         }
         // texture and image contain the same image, for some containers its easyer to use image instead of texture
         public void Store( string path, CoreTexture texture, GenericImage image ) {
