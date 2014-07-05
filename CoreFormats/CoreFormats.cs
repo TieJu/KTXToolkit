@@ -579,7 +579,9 @@ namespace KTXToolkit {/*
         GL_RGB10_A2 = 0x8059,
         GL_RGBA12 = 0x805A,
         GL_RGBA16 = 0x805B,
-    };
+        GL_BGR = 0x80E0,
+        GL_BGRA = 0x80E1
+};
     class GL {
         public static UInt32 GL_BYTE = 0x1400;
         public static UInt32 GL_UNSIGNED_BYTE = 0x1401;
@@ -636,206 +638,9 @@ namespace KTXToolkit {/*
         public static UInt32 GL_RGB10_A2 = 0x8059;
         public static UInt32 GL_RGBA12 = 0x805A;
         public static UInt32 GL_RGBA16 = 0x805B;
-    }/*
-    public abstract class FromatBase {
-        private string name;
-        public override string ToString() {
-            return name;
-        }
-        public FromatBase( Values internalFormat, Values baseInaternalFormat, Values[] dataType, Values[] dataFormat, uint channelCount_, uint align_, string name_ ) {
-            glTypes = new IGLValue[dataType.Length];
-            for ( int i = 0; i < glTypes.Length; ++i ) {
-                glTypes[i] = new GLValue( dataType[i] );
-            }
-
-            glFormats = new IGLValue[dataFormat.Length];
-            for ( int i = 0; i < glFormats.Length; ++i ) {
-                glFormats[i] = new GLValue( dataFormat[i] );
-            }
-
-            glInternalFormat = new GLValue( internalFormat );
-            glBaseInternalFormat = new GLValue( baseInaternalFormat );
-            channelCount = channelCount_;
-            align = align_;
-            name = name_;
-        }
-        IGLValue[] glTypes { get; set; }
-        IGLValue[] glFormats { get; set; }
-        IGLValue glInternalFormat { get; set; }
-        IGLValue glBaseInternalFormat { get; set; }
-        public uint channelCount;
-        public uint align;
-
-        protected abstract double ToGenericImagePixelAtIndex( byte[] bytes, UInt32 pixel, uint channel );
-        protected abstract byte[] ToCoreImagePixelAtIndex( double[] value, UInt32 pixel, uint channel, int dataType, int formatType );
-
-        private void ToGenericImagePixel( CoreTexture texture, ref GenericImage image, UInt32 level, UInt32 pixel ) {
-            for ( uint channel = 0; channel < channelCount; ++channel ) {
-                image.mipmapLevels[level].pixels[pixel * channelCount + channel] = ToGenericImagePixelAtIndex( texture.mipmapLevels[level].pixels, pixel, channel );
-            }
-        }
-
-        private void ToGenericImageLevel( CoreTexture texture, ref GenericImage image, UInt32 level ) {
-            UInt32 x = (UInt32)( (int)image.width >> (int)level );
-            UInt32 y = (UInt32)( (int)image.height >> (int)level );
-            UInt32 z = (UInt32)( (int)image.depth >> (int)level );
-            x = x < 1 ? 1 : x;
-            y = y < 1 ? 1 : y;
-            z = z < 1 ? 1 : z;
-            UInt32 pixels = image.faces * image.arrays * x * y * z;
-            image.mipmapLevels[level] = new GenericImageMipmapLevel();
-            image.mipmapLevels[level].pixels = new double[pixels * channelCount];
-            for ( UInt32 pixel = 0; pixel < pixels; ++pixel ) {
-                ToGenericImagePixel( texture, ref image, level, pixel );
-            }
-        }
-
-        public GenericImage ToGenericImage( CoreTexture texture ) {
-            GenericImage result = new GenericImage();
-            result.width = texture.pixelWidth;
-            result.height = texture.pixelHeight;
-            result.depth = texture.pixelDepth != 0 ? texture.pixelDepth : 1;
-            result.arrays = texture.numberOfArrayElements != 0 ? texture.numberOfArrayElements : 1;
-            result.faces = texture.numberOfFaces;
-            result.channels = channelCount;
-            result.mipmapLevels = new GenericImageMipmapLevel[texture.mipmapLevels.Length];
-            for ( UInt32 level = 0; level < texture.mipmapLevels.Length; ++level ) {
-                ToGenericImageLevel( texture, ref result, level );
-            }
-            return result;
-        }
-
-
-        private void ToCoreImagePixel( GenericImage image, UInt32 level, UInt32 pixel, ref List<byte> pixels, int dataType, int formatType ) {
-            for ( uint channel = 0; channel < channelCount; ++channel ) {
-                pixels.AddRange( ToCoreImagePixelAtIndex( image.mipmapLevels[level].pixels, pixel, channel, dataType, formatType ) );
-            }
-        }
-
-        private void ToCoreImageLevel( GenericImage image, ref CoreTexture texture, UInt32 level, int dataType, int formatType ) {
-            UInt32 x = (UInt32)( (int)image.width >> (int)level );
-            UInt32 y = (UInt32)( (int)image.height >> (int)level );
-            UInt32 z = (UInt32)( (int)image.depth >> (int)level );
-            x = x < 1 ? 1 : x;
-            y = y < 1 ? 1 : y;
-            z = z < 1 ? 1 : z;
-            UInt32 pixels = image.faces * image.arrays * x * y * z;
-            texture.mipmapLevels[level] = new CoreTextureMipmapLevel();
-            List<byte> pixelBuf = new List<byte>();
-            for ( UInt32 pixel = 0; pixel < pixels; ++pixel ) {
-                ToCoreImagePixel( image, level, pixel, ref pixelBuf, dataType, formatType );
-            }
-            texture.mipmapLevels[level].pixels = pixelBuf.ToArray();
-        }
-
-        public CoreTexture ToCoreTexture( GenericImage image, int dataType, int formatType ) {
-            CoreTexture result = new CoreTexture();
-            result.glType = glTypes[dataType].value;
-            result.glTypeSize = 1;
-            result.glFormat = glFormats[formatType].value;
-            result.glInternalFormat = glInternalFormat.value;
-            result.glBaseInternalFormat = glBaseInternalFormat.value;
-            result.pixelWidth = image.width;
-            result.pixelHeight = image.height;
-            result.pixelDepth = image.depth <= 1 ? 0 : image.depth;
-            result.numberOfArrayElements = image.arrays <= 1 ? 0 : image.arrays;
-            result.numberOfFaces = image.faces;
-            result.keyValuePairs = new CoreTextureKeyValuePair[1];
-            result.keyValuePairs[0] = new CoreTextureKeyValuePair();
-            result.keyValuePairs[0].key = "fileGenerator";
-            result.keyValuePairs[0].value = "KTXToolkit by Tiemo Jung";
-            result.mipmapLevels = new CoreTextureMipmapLevel[image.mipmapLevels.Length];
-            for ( UInt32 level = 0; level < result.mipmapLevels.Length; ++level ) {
-                ToCoreImageLevel( image, ref result, level, dataType, formatType );
-            }
-            return result;
-        }
-    }*/
-    /*
-    public class Format8UN : FromatBase, ITextureFormat {
-        protected override double ToGenericImagePixelAtIndex( byte[] bytes, UInt32 pixel, uint channel ) {
-            byte v = bytes[pixel * align + channel];
-            return (double)v / 255.0;
-        }
-
-        protected override byte[] ToCoreImagePixelAtIndex( double[] value, UInt32 pixel, uint channel ) {
-            return new byte[1] { (byte)( value[pixel * channelCount + channel] * 255 ) };
-        }
-
-        public Format8UN( UInt32 type, UInt32 format, UInt32 intFormat, UInt32 baseIntFormat, uint channelCount_, uint align_, string name_ )
-         : base(type, format, intFormat, baseIntFormat, channelCount_, align_, name_ ) {}
+        public static UInt32 GL_BGR = 0x80E0;
+        public static UInt32 GL_BGRA = 0x80E1;
     }
-
-    public class Format16UN : FromatBase, ITextureFormat {
-        protected override double ToGenericImagePixelAtIndex( byte[] bytes, UInt32 pixel, uint channel ) {
-            UInt16 v = BitConverter.ToUInt16( bytes, (int)( pixel * align + channel * 2 ) );
-            return (double)v / UInt16.MaxValue;
-        }
-
-        protected override byte[] ToCoreImagePixelAtIndex( double[] value, UInt32 pixel, uint channel ) {
-            return BitConverter.GetBytes( (UInt16)( value[pixel * channelCount + channel] * UInt16.MaxValue ) );
-        }
-
-        public Format16UN( UInt32 type, UInt32 format, UInt32 intFormat, UInt32 baseIntFormat, uint channelCount_, uint align_, string name_ )
-         : base( type, format, intFormat, baseIntFormat, channelCount_, align_, name_ ) { }
-    }
-
-    public class Format32UN : FromatBase, ITextureFormat {
-        protected override double ToGenericImagePixelAtIndex( byte[] bytes, UInt32 pixel, uint channel ) {
-            UInt32 v = BitConverter.ToUInt32( bytes, (int)( pixel * align + channel * 4 ) );
-            return (double)v / UInt32.MaxValue;
-        }
-
-        protected override byte[] ToCoreImagePixelAtIndex( double[] value, UInt32 pixel, uint channel ) {
-            return BitConverter.GetBytes( (UInt32)( value[pixel * channelCount + channel] * UInt32.MaxValue ) );
-        }
-
-        public Format32UN( UInt32 type, UInt32 format, UInt32 intFormat, UInt32 baseIntFormat, uint channelCount_, uint align_, string name_ )
-         : base( type, format, intFormat, baseIntFormat, channelCount_, align_, name_ ) { }
-    }
-
-    public class Format8SN : FromatBase, ITextureFormat {
-        protected override double ToGenericImagePixelAtIndex( byte[] bytes, UInt32 pixel, uint channel ) {
-            byte v = bytes[pixel * align + channel];
-            return ( (double)v / 255.0 - 0.5 ) * 2.0;
-        }
-
-        protected override byte[] ToCoreImagePixelAtIndex( double[] value, UInt32 pixel, uint channel ) {
-            return new byte[1] { (byte)( ( ( value[pixel * channelCount + channel] / 2.0 ) + 0.5 ) * 255 ) };
-        }
-
-        public Format8SN( UInt32 type, UInt32 format, UInt32 intFormat, UInt32 baseIntFormat, uint channelCount_, uint align_, string name_ )
-         : base( type, format, intFormat, baseIntFormat, channelCount_, align_, name_ ) { }
-    }
-
-    public class Format16SN : FromatBase, ITextureFormat {
-        protected override double ToGenericImagePixelAtIndex( byte[] bytes, UInt32 pixel, uint channel ) {
-            Int16 v = BitConverter.ToInt16( bytes, (int)( pixel * align + channel * 2 ) );
-            return ( ( (double)v / Int16.MaxValue ) - 0.5 ) * 2.0;
-        }
-
-        protected override byte[] ToCoreImagePixelAtIndex( double[] value, UInt32 pixel, uint channel ) {
-            return BitConverter.GetBytes( (UInt16)( ( ( value[pixel * channelCount + channel] / 2.0 ) + 0.5 ) * UInt16.MaxValue ) );
-        }
-
-        public Format16SN( UInt32 type, UInt32 format, UInt32 intFormat, UInt32 baseIntFormat, uint channelCount_, uint align_, string name_ )
-         : base( type, format, intFormat, baseIntFormat, channelCount_, align_, name_ ) { }
-    }
-
-    public class Format32SN : FromatBase, ITextureFormat {
-        protected override double ToGenericImagePixelAtIndex( byte[] bytes, UInt32 pixel, uint channel ) {
-            Int32 v = BitConverter.ToInt32( bytes, (int)( pixel * align + channel * 2 ) );
-            return ( ( (double)v / Int16.MaxValue ) - 0.5 ) * 2.0;
-        }
-
-        protected override byte[] ToCoreImagePixelAtIndex( double[] value, UInt32 pixel, uint channel ) {
-            return BitConverter.GetBytes( (Int32)( ( ( value[pixel * channelCount + channel] / 2.0 ) + 0.5 ) * Int32.MaxValue ) );
-        }
-
-        public Format32SN( UInt32 type, UInt32 format, UInt32 intFormat, UInt32 baseIntFormat, uint channelCount_, uint align_, string name_ )
-         : base( type, format, intFormat, baseIntFormat, channelCount_, align_, name_ ) { }
-    }
-    */
     public class CoreInaternalPixelFormatBase : IGLInteralPixelFormat {
         public CoreInaternalPixelFormatBase(Values glValue ) {
             GLValue = glValue;
@@ -938,7 +743,7 @@ namespace KTXToolkit {/*
 
         public int Channels { get; set; }
 
-        protected double ToGenericImagePixelAtPixel( CoreTexture texture, IGLDataFormat dataFormat, int mipIndex, int pixelIndex, int channelIndex ) {
+        virtual protected double ToGenericImagePixelAtPixel( CoreTexture texture, IGLDataFormat dataFormat, int mipIndex, int pixelIndex, int channelIndex ) {
             long offset = pixelIndex * dataFormat.PixelSize( Channels );
             return dataFormat.ToGenericFormat( texture.mipmapLevels[mipIndex].pixels, (int)offset, channelIndex, Channels );
         }
@@ -991,7 +796,7 @@ namespace KTXToolkit {/*
             return image;
         }
 
-        protected byte[] ToCoreMipTexturePixelAtIndex( GenericImage image, IGLDataFormat dataFormat, int mipIndex, int pixelIndex, int channelIndex ) {
+        virtual protected byte[] ToCoreMipTexturePixelAtIndex( GenericImage image, IGLDataFormat dataFormat, int mipIndex, int pixelIndex, int channelIndex ) {
             long offset = pixelIndex * image.channels;
             return dataFormat.ToCoreFormat( image.mipmapLevels[mipIndex].pixels, (int)offset, channelIndex, (int)image.channels );
         }
@@ -1046,6 +851,33 @@ namespace KTXToolkit {/*
             };
 
             return texture;
+        }
+    }
+
+    public class CorePixelFormatSwapRG : CorePixelFormatBase {
+        public CorePixelFormatSwapRG( Values glValue, int channels ) : base( glValue, channels ) {
+        }
+
+        override protected double ToGenericImagePixelAtPixel( CoreTexture texture, IGLDataFormat dataFormat, int mipIndex, int pixelIndex, int channelIndex ) {
+            long offset = pixelIndex * dataFormat.PixelSize( Channels );
+            if ( channelIndex  == 0 ) {
+                return dataFormat.ToGenericFormat( texture.mipmapLevels[mipIndex].pixels, (int)offset, 2, Channels );
+            } else if ( channelIndex == 2 ) {
+                return dataFormat.ToGenericFormat( texture.mipmapLevels[mipIndex].pixels, (int)offset, 0, Channels );
+            } else {
+                return dataFormat.ToGenericFormat( texture.mipmapLevels[mipIndex].pixels, (int)offset, channelIndex, Channels );
+            }
+        }
+
+        override protected byte[] ToCoreMipTexturePixelAtIndex( GenericImage image, IGLDataFormat dataFormat, int mipIndex, int pixelIndex, int channelIndex ) {
+            long offset = pixelIndex * image.channels;
+            if ( channelIndex == 0 ) {
+                return dataFormat.ToCoreFormat( image.mipmapLevels[mipIndex].pixels, (int)offset, 2, (int)image.channels );
+            } else if ( channelIndex == 2 ) {
+                return dataFormat.ToCoreFormat( image.mipmapLevels[mipIndex].pixels, (int)offset, 0, (int)image.channels );
+            } else {
+                return dataFormat.ToCoreFormat( image.mipmapLevels[mipIndex].pixels, (int)offset, channelIndex, (int)image.channels );
+            }
         }
     }
 
@@ -1164,7 +996,9 @@ namespace KTXToolkit {/*
             PixelFormats = new IGLPixelFormat[] {
                 new CorePixelFormatBase(Values.GL_RED, 1),
                 new CorePixelFormatBase(Values.GL_RGB, 3),
-                new CorePixelFormatBase(Values.GL_RGBA, 4)
+                new CorePixelFormatBase(Values.GL_RGBA, 4),
+                new CorePixelFormatSwapRG(Values.GL_BGR, 3),
+                new CorePixelFormatSwapRG(Values.GL_BGRA, 4)
             };
 
             InternalPixelFormats = new IGLInteralPixelFormat[] {

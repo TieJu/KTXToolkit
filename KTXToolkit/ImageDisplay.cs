@@ -176,7 +176,7 @@ namespace KTXToolkit {
                         rgba[c] = (int)( genericTexture.mipmapLevels[mipmap].pixels[offset + c] * 255 );
                         rgba[c] = Math.Max( 0, Math.Min( 255, rgba[c] ) );
                     }
-                    drawImage.SetPixel( x, y, Color.FromArgb( rgba[3], rgba[0], rgba[1], rgba[2] ) );
+                    drawImage.SetPixel( x, drawImage.Height - y - 1, Color.FromArgb( rgba[3], rgba[0], rgba[1], rgba[2] ) );
                 }
             }
             pictureBox.Image = drawImage;
